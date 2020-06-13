@@ -2,4 +2,4 @@ from django.views.generic import ListView
 
 
 class SeanceListView(ListView):
-    pass
+    template_name = 'seance/index.html'
