@@ -1,1 +1,12 @@
 {% extends 'layout/base.html' %}
+
+
+{% block content %}
+
+    {% for seance in seance_list %}
+        <div class="seance-search-result">
+            {{ seance.film.title }}
+            {{ seance.starts }}
+        </div>
+    {% endfor %}
+{% endblock content %}

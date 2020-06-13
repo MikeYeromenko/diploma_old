@@ -54,6 +54,7 @@ class SeanceModelsTestCase(SeanceInitial):
         """
         self.assertEqual(self.film.title, 'James Bond')
         self.assertEqual(self.film.duration, datetime.time(1, 40))
+        self.assertEqual(self.film.admin.username, 'admin')
 
     def test_hall_model_basic(self):
         """
@@ -61,6 +62,7 @@ class SeanceModelsTestCase(SeanceInitial):
         """
         self.assertEqual(self.hall.name, 'Yellow')
         self.assertEqual(self.hall.size, 50)
+        self.assertEqual(self.hall.admin.username, 'admin')
 
     def test_seance_model_basic(self):
         """
@@ -69,6 +71,7 @@ class SeanceModelsTestCase(SeanceInitial):
         self.assertEqual(self.seance.film.title, 'James Bond')
         self.assertEqual(self.seance.ticket_price, 100)
         self.assertEqual(self.seance.time_ends, datetime.time(13, 50))
+        self.assertEqual(self.seance.hall.name, 'Yellow')
 
     def test_default_seance_end_date_auto_added(self):
         """
@@ -119,3 +122,13 @@ class SeanceModelsTestCase(SeanceInitial):
             admin=self.admin,
         )
         self.assertEqual(seance2.time_ends, datetime.time(1, 40))
+
+        #   Test if in Yellow hall there are 3 seances
+        self.assertEqual(Seance.objects.filter(hall=self.hall).count(), 3)
+
+    def test_user_created(self):
+        """
+        Test if user was created, with initial data
+        """
+        self.assertEqual(self.admin.username, 'admin')
+        self.assertTrue(self.admin.is_superuser)

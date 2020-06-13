@@ -1,10 +1,12 @@
 from django.test import TestCase
 
+from seance.tests.test_models import SeanceInitial
 
-class SeanceViewsBaseTestCase(TestCase):
+
+class SeanceViewsBaseTestCase(SeanceInitial):
 
     def setUp(self):
-        pass
+        super().setUp()
 
 
 class SeanceListViewTestCase(SeanceViewsBaseTestCase):
@@ -13,8 +15,12 @@ class SeanceListViewTestCase(SeanceViewsBaseTestCase):
         """
         Tests that SeanceListView returns a 200 response, uses correct template and has correct context
         """
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)
         with self.assertTemplateUsed('seance/index.html'):
-            self.assertEqual(len(response.context['seances']), 2)
+            response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        # import pdb; pdb.set_trace()
+
+        self.assertEqual(len(response.context['seance_list']), 1)
+
+        self.assertEqual(response.context['seance_list'][0].film.title, 'James Bond')
 
