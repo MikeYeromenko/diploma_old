@@ -1,15 +1,12 @@
 from django.test import TestCase
 
-from seance.tests.test_models import SeanceInitial
+from seance.tests.test_models import BaseInitial
 
 
-class SeanceViewsBaseTestCase(SeanceInitial):
+class SeanceListViewTestCase(TestCase, BaseInitial):
 
     def setUp(self):
-        super().setUp()
-
-
-class SeanceListViewTestCase(SeanceViewsBaseTestCase):
+        BaseInitial.__init__(self)
 
     def test_basic(self):
         """

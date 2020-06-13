@@ -1,14 +1,22 @@
+import datetime
+
+from django.contrib.auth import get_user_model
 from django.test import LiveServerTestCase
 from selenium import webdriver
 
+from seance.models import Film, Hall, Seance
+from seance.tests.test_models import BaseInitial
 
-class UsersTestCase(LiveServerTestCase):
+
+class UsersTestCase(LiveServerTestCase, BaseInitial):
 
     def setUp(self):
         # path to geckodriver can be added using terminal with this command (on my local comp):
         # export PATH=$PATH:/home/mike/geckodriver
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(2)
+
+        BaseInitial.__init__(self)
 
     def tearDown(self):
         self.browser.quit()
@@ -20,8 +28,9 @@ class UsersTestCase(LiveServerTestCase):
         # User enters the start page of the site. He can see, that he is at the cinema's site
         # because the name of the site in the heading. It's "Broadway cinema"
 
-        homepage = self.browser.get(self.live_server_url + '/')
-        heading_element = self.browser.find_element_by_css_selector('.navbar-brand')
+        self.browser.get(self.live_server_url + '/')
+
+        self.assertEqual(self.browser.title, 'Broadway cinema')
 
         # There are also links to log in, and to registrate
         # If user is logged in, he sees Log out link and Registration link

@@ -6,9 +6,8 @@ from django.utils import timezone
 from seance.models import Film, Hall, Seance
 
 
-class SeanceInitial(TestCase):
-
-    def setUp(self):
+class BaseInitial:
+    def __init__(self):
         self.admin = get_user_model().objects.create_superuser(
             username='admin', email='admin@somesite.com'
         )
@@ -46,7 +45,10 @@ class SeanceInitial(TestCase):
         )
 
 
-class SeanceModelsTestCase(SeanceInitial):
+class SeanceModelsTestCase(TestCase, BaseInitial):
+
+    def setUp(self):
+        BaseInitial.__init__(self)
 
     def test_film_model_basic(self):
         """
