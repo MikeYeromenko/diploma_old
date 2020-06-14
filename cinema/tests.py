@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import LiveServerTestCase
 from selenium import webdriver
 
-from seance.models import Film, Hall, Seance
+from seance.models import Film, Hall, Seance, AdvUser
 from seance.tests.test_models import BaseInitial
 
 
@@ -14,6 +14,7 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         # path to geckodriver can be added using terminal with this command (on my local comp):
         # export PATH=$PATH:/home/mike/geckodriver
         self.browser = webdriver.Firefox()
+        # self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(2)
 
         BaseInitial.__init__(self)
@@ -22,7 +23,7 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         self.browser.quit()
         # pass
 
-    def test_user_sees_startpage(self):
+    def test_user_sees_start_page_registers_logs_in(self):
         """
         Test user can enter the start page with url '/'.
         """
@@ -46,12 +47,33 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         # and comes to the registration page with URL 'accounts/register/'
         self.assertEqual(self.browser.current_url, self.live_server_url + '/accounts/register/')
 
-        # There he sees a form for registration with fields: username,
+        # There he sees a form for registration with fields, labeled: username, password1, password2
         reg_form = self.browser.find_element_by_id('registration-form')
-        reg_form.find_element_by_id('id_username').send_keys('user1')
-        reg_form.find_element_by_id('id_password1').send_keys('password1')
-        reg_form.find_element_by_id('id_password2').send_keys('password1')
-        reg_form.find_element_by_id('form-submit').click()
+        username = reg_form.find_element_by_id('id_username')
+        password1 = reg_form.find_element_by_id('id_password1')
+        password2 = reg_form.find_element_by_id('id_password2')
+        submit = reg_form.find_element_by_id('form-submit')
+
+        self.assertIsNotNone(self.browser.find_element_by_css_selector('label[for="id_username"]'))
+        self.assertEqual(username.get_attribute('placeholder'), 'username')
+        self.assertIsNotNone(self.browser.find_element_by_css_selector('label[for="id_password1"]'))
+        self.assertEqual(password1.get_attribute('placeholder'), 'password')
+        self.assertIsNotNone(self.browser.find_element_by_css_selector('label[for="id_password2"]'))
+        self.assertEqual(password2.get_attribute('placeholder'), 'repeat password')
+        self.assertEqual(submit.get_attribute('value'), 'Submit')
+
+        # then he enters correct information and clicks "Submit"
+        username.send_keys('user1')
+        password1.send_keys('Password1234')
+        password2.send_keys('Password1234')
+        # submit.click()
+        # submit.submit()
+
+        # import pdb; pdb.set_trace()
+        # self.assertTrue(AdvUser.objects.filter(username='user1'))
+
+        # after been registered user is redirected to root url
+        # self.assertEqual(self.browser.current_url, self.live_server_url + '/')
 
         # If user is logged in, he sees Log out link and Registration link
         #
@@ -64,4 +86,20 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         #
         #
         # The title of the film is a link. User clicks it and comes to seance detail page.
-        self.fail(msg='Incomplete test')
+
+        # self.fail(msg='Incomplete test')
+
+
+
+        # # First he enters username, password1 and password2, but makes a mistake in password2 clicks Submit
+        # username.send_keys('user1')
+        # password1.send_keys('password1')
+        # password2.send_keys('some text')
+        # submit.click()
+        # self.assertFalse(AdvUser.objects.filter(username='user1'))
+        #
+        # Nothing
+
+        self.browser.get(self.live_server_url + '/')
+        self.browser.find_element_by_id('link-login').click()
+        login_form = self.browser.find_element_by_id('login-form')
