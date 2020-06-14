@@ -32,7 +32,21 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
 
         self.assertEqual(self.browser.title, 'Broadway cinema')
 
-        # There are also links to log in, and to registrate
+        # There are also links to log in, and to register
+        login_a = self.browser.find_element_by_id('link-login')
+        self.assertEqual(login_a.text, 'LogIn')
+
+        register_a = self.browser.find_element_by_id('link-register')
+        self.assertEqual(register_a.text, 'Registration')
+
+        # Our user isn't registered on the site, so he clicks Registration link
+        register_a.click()
+
+        # and comes to the registration page with URL 'accounts/register/'
+        self.assertEqual(self.browser.current_url, self.live_server_url + '/accounts/register/')
+
+        # There he sees a form for registration with fields: username,
+
         # If user is logged in, he sees Log out link and Registration link
         #
         # He can see the list of available seances, with time of its beginning, time of its ending,

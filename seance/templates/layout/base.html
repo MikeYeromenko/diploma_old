@@ -1,3 +1,6 @@
+{% load i18n %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +9,9 @@
 </head>
 <body>
 {#  <a class="navbar-brand">Broadway cinema</a>#}
+
+<a id="link-login" href="">{% trans 'LogIn' %}</a>
+<a id="link-register" href="">{% trans 'Registration' %}</a>
 
   {% block content %}
   {% endblock content %}

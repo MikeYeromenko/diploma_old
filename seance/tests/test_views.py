@@ -21,3 +21,15 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
 
         self.assertEqual(response.context['seance_list'][0].film.title, 'James Bond')
 
+
+class RegistrationTestCase(TestCase):
+
+    def test_basic(self):
+        """
+        Tests that RegisterUserView returns a 200 response, uses correct template
+        """
+        with self.assertTemplateUsed('seance/register_user.html'):
+            response = self.client.get('/accounts/register/')
+        self.assertEqual(response.status_code, 200)
+
+

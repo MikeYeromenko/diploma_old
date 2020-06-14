@@ -12,3 +12,11 @@ class CinemaUrlsTestCase(TestCase):
         root = resolve('/')
         self.assertEqual(root.func.__name__, 'SeanceListView')
         self.assertEqual(root.url_name, 'index')
+        
+    def test_url_for_registration(self):
+        """
+        Test that url accounts/register/ exists, resolves to the correct cbv and has expected name
+        """
+        registration = resolve('/accounts/register/')
+        self.assertEqual(registration.func.__name__, 'RegisterUserView')
+        self.assertEqual(registration.url_name, 'register')
