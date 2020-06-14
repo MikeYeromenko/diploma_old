@@ -31,5 +31,6 @@ class RegistrationTestCase(TestCase):
         with self.assertTemplateUsed('seance/register_user.html'):
             response = self.client.get('/accounts/register/')
         self.assertEqual(response.status_code, 200)
+        # self.assertEqual(response.)
 
 

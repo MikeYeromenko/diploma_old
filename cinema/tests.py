@@ -20,6 +20,7 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
 
     def tearDown(self):
         self.browser.quit()
+        # pass
 
     def test_user_sees_startpage(self):
         """
@@ -46,6 +47,11 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         self.assertEqual(self.browser.current_url, self.live_server_url + '/accounts/register/')
 
         # There he sees a form for registration with fields: username,
+        reg_form = self.browser.find_element_by_id('registration-form')
+        reg_form.find_element_by_id('id_username').send_keys('user1')
+        reg_form.find_element_by_id('id_password1').send_keys('password1')
+        reg_form.find_element_by_id('id_password2').send_keys('password1')
+        reg_form.find_element_by_id('form-submit').click()
 
         # If user is logged in, he sees Log out link and Registration link
         #

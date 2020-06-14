@@ -11,7 +11,7 @@
 {#  <a class="navbar-brand">Broadway cinema</a>#}
 
 <a id="link-login" href="">{% trans 'LogIn' %}</a>
-<a id="link-register" href="">{% trans 'Registration' %}</a>
+<a id="link-register" href="{% url 'seance:register' %}">{% trans 'Registration' %}</a>
 
   {% block content %}
   {% endblock content %}
