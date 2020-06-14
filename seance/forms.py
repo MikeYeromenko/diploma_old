@@ -30,13 +30,16 @@ class RegistrationForm(forms.ModelForm):
 
     def clean(self):
         """
-        Validates that password1 is equal with password2
+        Checks that password1 is equal with password2
         """
         super().clean()
-        password1, password2 = self.cleaned_data['password1'], self.cleaned_data['password2']
+        password1, password2 = self.cleaned_data.get('password1'), self.cleaned_data.get('password2')
         if password1 and password2 and password1 != password2:
             errors = {'password2': ValidationError(_('passwords mismatch'), code='password_mismatch')}
             raise ValidationError(errors)
+
+    def is_valid(self):
+        return super(RegistrationForm, self).is_valid()
 
     def save(self, commit=True):
         user = super().save(commit=False)

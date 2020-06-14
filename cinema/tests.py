@@ -20,8 +20,8 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         BaseInitial.__init__(self)
 
     def tearDown(self):
-        self.browser.quit()
-        # pass
+        # self.browser.quit()
+        pass
 
     def test_user_sees_start_page_registers_logs_in(self):
         """
@@ -62,14 +62,13 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         self.assertEqual(password2.get_attribute('placeholder'), 'repeat password')
         self.assertEqual(submit.get_attribute('value'), 'Submit')
 
-        # then he enters correct information and clicks "Submit"
+        # He fills inputs in and clicks "Submit"
         username.send_keys('user1')
-        password1.send_keys('Password1234')
-        password2.send_keys('Password1234')
-        # submit.click()
-        # submit.submit()
+        password1.send_keys('Password4321')
+        password2.send_keys('Password4321')
 
-        # import pdb; pdb.set_trace()
+        submit.click()
+
         # self.assertTrue(AdvUser.objects.filter(username='user1'))
 
         # after been registered user is redirected to root url
@@ -85,21 +84,34 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         #
         #
         #
-        # The title of the film is a link. User clicks it and comes to seance detail page.
+        # The title of the film is a link. User clicks it and comes to seance detail page
 
+        # self.browser.get(self.live_server_url + '/')
+        # self.browser.find_element_by_id('link-login').click()
+        # login_form = self.browser.find_element_by_id('login-form')
+        # login_form.find_element_by_id('id_username').send_keys('admin')
+        # login_form.find_element_by_id('id_password').send_keys('password1')
+        # login_form.find_element_by_id('submit-login-form').click()
+        #
         # self.fail(msg='Incomplete test')
 
+    def test_staff_can_add_content(self):
+        """
+        Tests that a 'staff' user can access the admin and
+        add Albums, Tracks, and Solos
+        """
+        # Bill would like to add a record and a number of
+        # solos to JMAD. He visits the admin site
+        admin_root = self.browser.get(self.live_server_url + '/admin/')
 
+        # He can tell he's in the right place because of the
+        # title of the page
+        self.assertEqual(self.browser.title, 'Log in | Django site admin')
 
-        # # First he enters username, password1 and password2, but makes a mistake in password2 clicks Submit
-        # username.send_keys('user1')
-        # password1.send_keys('password1')
-        # password2.send_keys('some text')
-        # submit.click()
-        # self.assertFalse(AdvUser.objects.filter(username='user1'))
-        #
-        # Nothing
-
-        self.browser.get(self.live_server_url + '/')
-        self.browser.find_element_by_id('link-login').click()
+        # He enters his username and password and submits the
+        # form to log in
         login_form = self.browser.find_element_by_id('login-form')
+        login_form.find_element_by_name('username').send_keys('admin')
+        login_form.find_element_by_name('password').send_keys('password1')
+        login_form.find_element_by_css_selector('.submit-row input').click()
+
