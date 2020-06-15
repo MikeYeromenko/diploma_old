@@ -198,8 +198,11 @@ class SeanceModelsTestCase(TestCase, BaseInitial):
         self.assertFalse(user.is_staff)
         self.assertTrue(user.is_active)
 
-        # user was created no more then one minute ago
-        self.assertTrue(timezone.now() - datetime.timedelta(minutes=1) < user.date_joined < timezone.now())
+        # user was created no more then 2 minutes ago
+        self.assertTrue(timezone.now() - datetime.timedelta(minutes=2) < user.date_joined < timezone.now())
+
+        # user's last activity field was set by default
+        self.assertTrue(timezone.now() - datetime.timedelta(minutes=1) < user.last_activity < timezone.now())
 
         # inbuilt methods give what we expect
         self.assertEqual(user.get_full_name(), 'Mike Yeromenko')
