@@ -55,7 +55,7 @@ class AuthenticationTestCase(TestCase, BaseInitial):
                             'password2': 'pass'}
         response = self.client.post('/accounts/register/', data=short_password)
         page = response.content.decode()
-        self.assertInHTML('<li>This password is too short. It must contain at least 8 characters.</li>', page)
+        self.assertInHTML('<li>Ensure this value has at least 8 characters (it has 4).</li>', page)
 
         password_mismatch = {'username': 'user1', 'password1': 'pass9513',
                              'password2': 'pass9531'}

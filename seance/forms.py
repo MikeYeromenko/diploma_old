@@ -8,10 +8,10 @@ from seance.models import AdvUser
 
 class RegistrationForm(forms.ModelForm):
     username = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': _('username')}))
-    password1 = forms.CharField(required=True,
+    password1 = forms.CharField(required=True, min_length=8,
                                 widget=forms.PasswordInput(attrs={'placeholder': _('password')}),
                                 help_text=password_validation.password_validators_help_text_html())
-    password2 = forms.CharField(required=True,
+    password2 = forms.CharField(required=True, min_length=8,
                                 widget=forms.PasswordInput(attrs={'placeholder': _('repeat password')}),
                                 help_text=_('Enter the same password for check please'))
 
