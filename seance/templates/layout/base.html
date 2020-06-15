@@ -17,6 +17,14 @@
 {% endif %}
 <a id="link-register" href="{% url 'seance:register' %}">{% trans 'Registration' %}</a>
 
+{% block messages %}
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+{% endblock messages %}
+
   {% block content %}
   {% endblock content %}
 

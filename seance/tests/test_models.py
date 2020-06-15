@@ -189,6 +189,8 @@ class SeanceModelsTestCase(TestCase, BaseInitial):
             last_name='Yeromenko',
             wallet=10000,
         )
+        user.set_password('password2')
+        user.save()
         self.assertEqual(user.username, 'user1')
         self.assertEqual(user.email, 'user1@somesite.com')
         self.assertEqual(user.first_name, 'Mike')
