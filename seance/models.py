@@ -30,6 +30,9 @@ class Film(models.Model):
     admin = models.ForeignKey(AdvUser, on_delete=models.PROTECT, verbose_name=_('instance created by'))
     is_active = models.BooleanField(default=True, verbose_name=_('in run?'))
 
+    def __str__(self):
+        return self.title
+
 
 class Hall(models.Model):
     name = models.CharField(max_length=20, verbose_name=_('name'))
@@ -40,6 +43,9 @@ class Hall(models.Model):
     admin = models.ForeignKey(AdvUser, on_delete=models.PROTECT, verbose_name=_('instance created by'),
                               related_name='halls')
     is_active = models.BooleanField(default=True, verbose_name=_('in run?'))
+
+    def __str__(self):
+        return self.name
 
 
 class Seance(models.Model):
@@ -87,6 +93,9 @@ class Seance(models.Model):
         # fractional part will be less then 60, so we leave it as minutes value
         minutes %= 60
         self.time_ends = datetime.time(hour=hours, minute=minutes)
+
+    def __str__(self):
+        return f'Seance with {self.film.title}'
 
 
 class Ticket(models.Model):

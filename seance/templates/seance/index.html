@@ -1,12 +1,20 @@
 {% extends 'layout/base.html' %}
+{% load i18n %}
 
 
 {% block content %}
-
+    <br>
+  <tr><td>Film</td> <td>Duration</td> <td>Dates</td> <td>Hall</td></tr>
     {% for seance in seance_list %}
-        <div class="seance-search-result">
-            {{ seance.film.title }}
-            {{ seance.starts }}
-        </div>
+      <table>
+        <tr>
+          <div class="seance-search-result">
+            <td><p>{{ seance.film.title }}</p></td>
+            <td><p>{{ seance.time_starts }} - {{ seance.time_ends }}</p></td>
+            <td><p>{{ seance.date_starts }} - {{ seance.date_ends }}</p></td>
+            <td><p>{{ seance.hall.name }}</p></td>
+          </div>
+        </tr>
+      </table>
     {% endfor %}
 {% endblock content %}

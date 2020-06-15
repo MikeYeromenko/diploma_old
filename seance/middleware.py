@@ -10,13 +10,14 @@ from seance.models import AdvUser
 
 
 class LogoutIfInActiveMiddleware(MiddlewareMixin):
-    # @staticmethod
-    def process_request(self, request):
+    @staticmethod
+    def process_request(request):
         assert hasattr(request, 'user'), (
             'The LogoutIfNotActiveMiddleware middleware requires authentication middleware to be installed.'
         )
         if request.user.is_authenticated:
-            if request.user.last_activity > timezone.now() - timezone.timedelta(minutes=5):
+            if request.user.is_superuser or (request.user.last_activity >
+                                             timezone.now() - timezone.timedelta(minutes=5)):
                 user = get_object_or_404(AdvUser, pk=request.user.pk)
                 user.last_activity = timezone.now()
                 user.save()
