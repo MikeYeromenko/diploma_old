@@ -22,7 +22,10 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         self.assertEqual(response.context['seance_list'][0].film.title, 'James Bond')
 
 
-class AuthenticationTestCase(TestCase):
+class AuthenticationTestCase(TestCase, BaseInitial):
+
+    def setUp(self):
+        BaseInitial.__init__(self)
 
     def test_basic_registration(self):
         """
@@ -36,11 +39,42 @@ class AuthenticationTestCase(TestCase):
         """
         Test RegistrationUserView deeply, with different types of errors
         """
-        invalid_username = {'username': 'admin', 'password1': 'password4321', 'password2': 'password4321'}
+        invalid_username = {'username': self.admin.username, 'password1': 'password4321',
+                            'password2': 'password4321'}
         response = self.client.post('/accounts/register/', data=invalid_username)
         page = response.content.decode()
-        import pdb; pdb.set_trace()
-        self.assertInHTML('This name already exists', page)
+        self.assertInHTML('<li>A user with that username already exists.</li>', page)
+
+        common_password = {'username': 'user1', 'password1': 'pass1234',
+                            'password2': 'pass1234'}
+        response = self.client.post('/accounts/register/', data=common_password)
+        page = response.content.decode()
+        self.assertInHTML('<li>This password is too common.</li>', page)
+
+        short_password = {'username': 'user1', 'password1': 'pass',
+                            'password2': 'pass'}
+        response = self.client.post('/accounts/register/', data=short_password)
+        page = response.content.decode()
+        self.assertInHTML('<li>This password is too short. It must contain at least 8 characters.</li>', page)
+
+        password_mismatch = {'username': 'user1', 'password1': 'pass9513',
+                             'password2': 'pass9531'}
+        response = self.client.post('/accounts/register/', data=password_mismatch)
+        page = response.content.decode()
+        self.assertInHTML('<li>passwords mismatch</li>', page)
+
+        password2_not_set = {'username': 'user1', 'password1': 'pass9513',
+                             'password2': ''}
+        response = self.client.post('/accounts/register/', data=password2_not_set)
+        page = response.content.decode()
+        self.assertInHTML('<li>This field is required.</li>', page)
+
+        username_short = {'username': 'u1', 'password1': 'pass9513',
+                          'password2': 'pass9513'}
+        response = self.client.post('/accounts/register/', data=username_short)
+        page = response.content.decode()
+        # post was't sent by browser because username too short
+        self.assertFalse(page)
 
     def test_basic_login(self):
         """
