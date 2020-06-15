@@ -1,4 +1,4 @@
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, TemplateView, FormView
 
@@ -19,6 +19,10 @@ class RegisterUserView(CreateView):
 
 
 class UserLoginView(LoginView):
+    pass
+
+
+class UserLogoutView(LogoutView):
     pass
 
 

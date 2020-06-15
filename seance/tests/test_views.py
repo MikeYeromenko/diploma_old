@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import reverse_lazy
 
 from seance.tests.test_models import BaseInitial
 
@@ -35,7 +36,7 @@ class AuthenticationTestCase(TestCase, BaseInitial):
             response = self.client.get('/accounts/register/')
         self.assertEqual(response.status_code, 200)
 
-    def test_registration(self):
+    def test_deep_registration(self):
         """
         Test RegistrationUserView deeply, with different types of errors
         """
@@ -76,13 +77,40 @@ class AuthenticationTestCase(TestCase, BaseInitial):
         # post was't sent by browser because username too short
         self.assertFalse(page)
 
-    def test_basic_login(self):
+    def test_deep_login(self):
         """
-        Tests that UserLoginView returns a 200 response, uses correct template
+        Tests UserLoginView deeply, with different kinds of errors
         """
-        with self.assertTemplateUsed('registration/login.html'):
-            response = self.client.get('/accounts/login/')
-        self.assertEqual(response.status_code, 200)
+        # after successful login user is redirected
+        correct_data = {'username': self.admin.username, 'password': 'password1'}
+        response = self.client.post('/accounts/login/', data=correct_data)
+        self.assertRedirects(response, '/accounts/profile/')
+
+        # login with correct data when user is already logged in
+        correct_data = {'username': self.admin.username, 'password': 'password1'}
+        response = self.client.post('/accounts/login/', data=correct_data)
+        page = response.content.decode()
+        # post was't sent by browser because user with that credentials is logged in
+        self.assertFalse(page)
+
+        self.client.get(reverse_lazy('seance:logout'))
+
+        incorrect_username = {'username': 'wrong', 'password': 'password1'}
+        response = self.client.post('/accounts/login/', data=incorrect_username)
+        page = response.content.decode()
+        self.assertInHTML('<li>Please enter a correct username and password. '
+                          'Note that both fields may be case-sensitive.</li>', page)
+
+        incorrect_password = {'username': 'admin', 'password': 'wrong'}
+        response = self.client.post('/accounts/login/', data=incorrect_password)
+        page = response.content.decode()
+        self.assertInHTML('<li>Please enter a correct username and password. '
+                          'Note that both fields may be case-sensitive.</li>', page)
+
+        empty_data = {'username': '', 'password': ''}
+        response = self.client.post('/accounts/login/', data=empty_data)
+        page = response.content.decode()
+        self.assertInHTML('<li>This field is required.</li>', page)
 
     def test_user_detail_view(self):
         """
@@ -91,6 +119,23 @@ class AuthenticationTestCase(TestCase, BaseInitial):
         with self.assertTemplateUsed('seance/profile.html'):
             response = self.client.get('/accounts/profile/')
         self.assertEqual(response.status_code, 200)
+
+    def test_basic_login_logout(self):
+        """
+        Tests that UserLoginView and UserLogoutView returns a 200 response, uses correct template
+        After user logged in he is able to logout
+        """
+        # login
+        with self.assertTemplateUsed('registration/login.html'):
+            response = self.client.get('/accounts/login/')
+        self.assertEqual(response.status_code, 200)
+
+        # logout
+        with self.assertTemplateUsed('registration/logged_out.html'):
+            response = self.client.get('/accounts/logout/')
+        self.assertEqual(response.status_code, 200)
+        page = response.content.decode()
+        self.assertInHTML('<p>You have logged out successfully</p>', page)
 
 
 

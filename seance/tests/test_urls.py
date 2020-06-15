@@ -25,9 +25,17 @@ class CinemaUrlsTestCase(TestCase):
         """
         Test that url accounts/login/ exists, resolves to the correct cbv and has expected name
         """
-        registration = resolve('/accounts/login/')
-        self.assertEqual(registration.func.__name__, 'UserLoginView')
-        self.assertEqual(registration.url_name, 'login')
+        login = resolve('/accounts/login/')
+        self.assertEqual(login.func.__name__, 'UserLoginView')
+        self.assertEqual(login.url_name, 'login')
+
+    def test_url_for_logout(self):
+        """
+        Test that url accounts/login/ exists, resolves to the correct cbv and has expected name
+        """
+        logout = resolve('/accounts/logout/')
+        self.assertEqual(logout.func.__name__, 'UserLogoutView')
+        self.assertEqual(logout.url_name, 'logout')
 
     def test_url_for_profile(self):
         """
