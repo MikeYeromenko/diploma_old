@@ -4,6 +4,11 @@
 
 {% block content %}
     <br>
+    <form action="" id="filter-form" method="post">
+      {{ filter_form.as_p }}
+        <input type="submit" value="{% trans 'Filter' %}" id="submit-choice">
+    </form>
+    <br>
   <tr><td>Film</td> <td>Duration</td> <td>Dates</td> <td>Hall</td></tr>
     {% for seance in seance_list %}
       <table>

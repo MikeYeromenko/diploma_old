@@ -89,6 +89,7 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         """
         Test that SeanceListView renders template with data we expected
         """
+        # There are seances: 12:00 today, 18:00 today, 18:00 today not active, 18:00 today+15days, 17:00 today
         self.create_seance_objects_for_tests()
         response = self.client.get(reverse_lazy('seance:index'))
         self.assertEqual(len(response.context.get('seance_list')), 3)

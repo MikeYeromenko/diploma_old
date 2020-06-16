@@ -47,3 +47,15 @@ class RegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+FILTER_CHOICES = (
+    ('cheap', _('from cheap to expensive')),
+    ('expensive', _('from expensive to cheap')),
+    ('latest', _('latest first')),
+    ('closest', _('closest first'))
+)
+
+
+class FilterForm(forms.Form):
+    filter = forms.ChoiceField(choices=FILTER_CHOICES, label=_('Choose filter: '))

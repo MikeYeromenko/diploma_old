@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import ListView, CreateView, TemplateView, FormView
 
-from seance.forms import RegistrationForm
+from seance.forms import RegistrationForm, FilterForm
 from seance.models import Seance, AdvUser
 
 
@@ -22,6 +22,16 @@ class SeanceListView(ListView):
                                      Q(date_starts__lte=datetime.date.today()) &
                                      Q(date_ends__gte=datetime.date.today()) &
                                      Q(time_starts__gt=timezone.now()))
+
+    def get_context_data(self, *args, **kwargs):
+        """
+        Adds FilterForm to context
+        :return: context
+        """
+        context = super().get_context_data(*args, **kwargs)
+        form = FilterForm()
+        context['filter_form'] = form
+        return context
 
 
 class RegisterUserView(CreateView):

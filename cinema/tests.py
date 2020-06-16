@@ -3,6 +3,7 @@ import datetime
 from django.contrib.auth import get_user_model
 from django.test import LiveServerTestCase
 from selenium import webdriver
+from django.utils.translation import gettext_lazy as _
 
 from seance.models import Film, Hall, Seance, AdvUser
 from seance.tests.test_models import BaseInitial
@@ -20,8 +21,8 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         BaseInitial.__init__(self)
 
     def tearDown(self):
-        # self.browser.quit()
-        pass
+        self.browser.quit()
+        # pass
 
     def test_user_sees_start_page_registers_logs_in(self):
         """
@@ -114,4 +115,16 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         login_form.find_element_by_name('username').send_keys('admin')
         login_form.find_element_by_name('password').send_keys('password1')
         login_form.find_element_by_css_selector('.submit-row input').click()
+
+    def test_filter_form_is_in_index_page(self):
+        """
+        Test that filter form was rendered and has fields we expect (at index page)
+        """
+        self.browser.get(self.live_server_url + '/')
+        filter_form = self.browser.find_element_by_id('filter-form')
+        choices = filter_form.find_element_by_id('id_filter')
+        filter_submit = filter_form.find_element_by_id('submit-choice')
+
+        self.assertEqual(filter_submit.get_attribute('value'), _('Filter'))
+        self.assertIsNotNone(filter_form.find_elements_by_css_selector('label[for="id_filter"]'))
 
