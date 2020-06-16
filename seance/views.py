@@ -97,4 +97,4 @@ class UserProfileView(TemplateView):
 
 
 class BasketView(TemplateView):
-    pass
+    template_name = 'seance/basket.html'

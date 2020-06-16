@@ -318,5 +318,16 @@ class AuthenticationTestCase(TestCase, BaseInitial):
         self.assertInHTML('<p>You have logged out successfully</p>', page)
 
 
+class BasketViewTestCase(TestCase, BaseInitial):
 
+    def setUp(self):
+        BaseInitial.__init__(self)
+
+    def test_basket_view(self):
+        """
+        Test that basket view works correctly
+        """
+        with self.assertTemplateUsed('seance/basket.html'):
+            response = self.client.get(reverse_lazy('seance:basket'))
+        self.assertEqual(response.status_code, 200)
 
