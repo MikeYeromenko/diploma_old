@@ -130,9 +130,15 @@ class Purchase(models.Model):
     was_returned = models.BooleanField(default=False, verbose_name=_('was returned?'))
     returned_at = models.DateTimeField(blank=True, null=True, verbose_name=_('returned at'))
 
+    def __str__(self):
+        return f'{self.user.username} at {self.created_at}'
+
 
 class Ticket(models.Model):
     seance = models.ForeignKey(Seance, on_delete=models.PROTECT, related_name='tickets', verbose_name=_('ticket'))
     purchase = models.ForeignKey(Purchase, on_delete=models.PROTECT, related_name='tickets', verbose_name=_('purchase'))
     created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=_('instance created at'))
     seat_number = models.PositiveSmallIntegerField(default=0, blank=True, null=True, verbose_name=_('seat number'))
+
+    def __str__(self):
+        return self.seance.__str__()

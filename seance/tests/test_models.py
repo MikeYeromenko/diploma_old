@@ -479,6 +479,7 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
 
         # film was created no more then 2 minutes ago
         self.assertTrue(timezone.now() - datetime.timedelta(minutes=2) < self.purchase.created_at < timezone.now())
+        self.assertEqual(self.purchase.__str__(), f'{self.user.username} at {self.purchase.created_at}')
 
     def test_ticket_model(self):
         """
@@ -491,3 +492,4 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
 
         # film was created no more then 2 minutes ago
         self.assertEqual(self.purchase.tickets.count(), Ticket.objects.filter(purchase__id=self.purchase.pk).count())
+        self.assertEqual(self.ticket1.__str__(), self.seance.__str__())
