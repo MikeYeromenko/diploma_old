@@ -45,3 +45,10 @@ class CinemaUrlsTestCase(TestCase):
         self.assertEqual(registration.func.__name__, 'UserProfileView')
         self.assertEqual(registration.url_name, 'profile')
 
+    def test_url_for_basket(self):
+        """
+        Test that url accounts/profile/ exists, resolves to the correct cbv and has expected name
+        """
+        registration = resolve('/basket/')
+        self.assertEqual(registration.func.__name__, 'BasketView')
+        self.assertEqual(registration.url_name, 'basket')

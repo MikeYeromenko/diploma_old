@@ -94,3 +94,7 @@ class UserLogoutView(LogoutView):
 
 class UserProfileView(TemplateView):
     template_name = 'seance/profile.html'
+
+
+class BasketView(TemplateView):
+    pass

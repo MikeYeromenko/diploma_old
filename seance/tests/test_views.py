@@ -109,8 +109,13 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         seances_test = Seance.objects.filter(
             Q(date_starts__lte=datetime.date.today()) & Q(date_ends__gte=datetime.date.today()) &
             Q(time_starts__gt=timezone.now()) & Q(is_active=True)).order_by('-ticket_price')
-        self.assertEqual(seances[0].ticket_price, seances_test[0].ticket_price)
-        self.assertEqual(seances[1].ticket_price, seances_test[1].ticket_price)
+
+        # the quantity of elements in seances dependes upon a time of the day. In the evening there may be
+        # a situation, that seances is empty, because time_starts of them passed
+        if seances_test:
+            self.assertEqual(seances[0].ticket_price, seances_test[0].ticket_price)
+            if len(seances_test) > 2:
+                self.assertEqual(seances[1].ticket_price, seances_test[1].ticket_price)
 
         # test ordering 'latest'
         response = self.client.get(reverse_lazy('seance:index'), data={'ordering': 'latest'})
@@ -119,8 +124,10 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         seances_test = Seance.objects.filter(
             Q(date_starts__lte=datetime.date.today()) & Q(date_ends__gte=datetime.date.today()) &
             Q(time_starts__gt=timezone.now()) & Q(is_active=True)).order_by('-time_starts')
-        self.assertEqual(seances[0].time_starts, seances_test[0].time_starts)
-        self.assertEqual(seances[1].time_starts, seances_test[1].time_starts)
+        if seances_test:
+            self.assertEqual(seances[0].time_starts, seances_test[0].time_starts)
+            if len(seances_test) > 2:
+                self.assertEqual(seances[1].time_starts, seances_test[1].time_starts)
 
         # test ordering 'closest'
         response = self.client.get(reverse_lazy('seance:index'), data={'ordering': 'closest'})
@@ -129,8 +136,10 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         seances_test = Seance.objects.filter(
             Q(date_starts__lte=datetime.date.today()) & Q(date_ends__gte=datetime.date.today()) &
             Q(time_starts__gt=timezone.now()) & Q(is_active=True)).order_by('time_starts')
-        self.assertEqual(seances[0].time_starts, seances_test[0].time_starts)
-        self.assertEqual(seances[1].time_starts, seances_test[1].time_starts)
+        if seances_test:
+            self.assertEqual(seances[0].time_starts, seances_test[0].time_starts)
+            if len(seances_test) > 2:
+                self.assertEqual(seances[1].time_starts, seances_test[1].time_starts)
 
     def test_tomorrow_option(self):
         """
