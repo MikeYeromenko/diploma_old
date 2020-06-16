@@ -119,6 +119,8 @@ class Seance(models.Model):
 
     class Meta:
         ordering = ('time_starts', )
+        verbose_name = _('seance')
+        verbose_name_plural = _('seances')
 
 
 class Ticket(models.Model):

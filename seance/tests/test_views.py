@@ -1,6 +1,8 @@
+import datetime
 from django.test import TestCase
 from django.urls import reverse_lazy
 
+from seance.models import Seance, Hall
 from seance.tests.test_models import BaseInitial
 
 
@@ -8,6 +10,67 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
 
     def setUp(self):
         BaseInitial.__init__(self)
+
+    def create_seance_objects_for_tests(self):
+        Seance.objects.create(
+            film=self.film,
+            date_starts=datetime.date.today(),
+            date_ends=datetime.date.today() + datetime.timedelta(days=15),
+            time_starts=datetime.time(18),
+            places_taken=0,
+            hall=self.hall,
+            is_active=True,
+            description='Some text',
+            ticket_price=150,
+            admin=self.admin,
+        )
+
+        Seance.objects.create(
+            film=self.film,
+            date_starts=datetime.date.today(),
+            date_ends=datetime.date.today() + datetime.timedelta(days=15),
+            time_starts=datetime.time(18),
+            places_taken=0,
+            hall=self.hall,
+            is_active=False,
+            description='Some text',
+            ticket_price=150,
+            admin=self.admin,
+        )
+
+        Seance.objects.create(
+            film=self.film,
+            date_starts=datetime.date.today() + datetime.timedelta(days=15),
+            date_ends=datetime.date.today() + datetime.timedelta(days=30),
+            time_starts=datetime.time(18),
+            places_taken=0,
+            hall=self.hall,
+            is_active=True,
+            description='Some text',
+            ticket_price=150,
+            admin=self.admin,
+        )
+
+        hall2 = Hall.objects.create(
+            name='Green',
+            size=80,
+            is_active=True,
+            description='Some text about why this hall is the best',
+            admin=self.admin
+        )
+
+        Seance.objects.create(
+            film=self.film,
+            date_starts=datetime.date.today(),
+            date_ends=datetime.date.today() + datetime.timedelta(days=15),
+            time_starts=datetime.time(17),
+            places_taken=0,
+            hall=hall2,
+            is_active=True,
+            description='Some text',
+            ticket_price=150,
+            admin=self.admin,
+        )
 
     def test_basic(self):
         """
@@ -26,9 +89,9 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         """
         Test that SeanceListView renders template with data we expected
         """
+        self.create_seance_objects_for_tests()
         response = self.client.get(reverse_lazy('seance:index'))
-        page = response.content.decode()
-        # import pdb; pdb.set_trace()
+        self.assertEqual(len(response.context.get('seance_list')), 3)
 
 
 class AuthenticationTestCase(TestCase, BaseInitial):
