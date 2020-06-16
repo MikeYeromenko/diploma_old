@@ -24,7 +24,7 @@ class SeanceListView(ListView):
                                         Q(date_ends__gte=datetime.date.today()) &
                                         Q(time_starts__gt=timezone.now()))
         if ordering_param:
-            self.order_queryset(ordering_param, seances)
+            seances = self.order_queryset(ordering_param, seances)
         return seances
 
     @staticmethod
@@ -33,13 +33,13 @@ class SeanceListView(ListView):
         orders seances queryset by users ordering
         """
         if ordering_param == 'cheap':
-            seances.order_by('ticket_price')
+            return seances.order_by('ticket_price')
         elif ordering_param == 'expensive':
-            seances.order_by('-ticket_price')
+            return seances.order_by('-ticket_price')
         elif ordering_param == 'latest':
-            seances.order_by('-time_starts')
+            return seances.order_by('-time_starts')
         elif ordering_param == 'closest':
-            seances.order_by('time_starts')
+            return seances.order_by('time_starts')
 
     def get_context_data(self, *args, **kwargs):
         """
@@ -47,7 +47,11 @@ class SeanceListView(ListView):
         :return: context
         """
         context = super().get_context_data(*args, **kwargs)
-        form = OrderingForm()
+
+        # if there is a choice made by user, we render page with that choice
+        ordering = self.request.GET.get('ordering', '')
+        form = OrderingForm(initial={'ordering': ordering})
+
         context['ordering_form'] = form
         return context
 

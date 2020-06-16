@@ -45,11 +45,3 @@ class CinemaUrlsTestCase(TestCase):
         self.assertEqual(registration.func.__name__, 'UserProfileView')
         self.assertEqual(registration.url_name, 'profile')
 
-    def test_url_for_ordering_seances(self):
-        """
-        Test that url accounts/profile/ exists, resolves to the correct cbv and has expected name
-        """
-        registration = resolve('/?ordering=expensive/')
-        self.assertEqual(registration.func.__name__, 'SeanceListView')
-        self.assertEqual(registration.url_name, 'index_with_ordering')
-        self.assertEqual(registration.kwargs.get('ordering'), '?ordering=expensive')

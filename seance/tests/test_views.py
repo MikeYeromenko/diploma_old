@@ -99,12 +99,25 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         Test ordering_queryset method
         """
         # test ordering 'from expensive to cheap'
-        # , data = {}
-        response = self.client.get(reverse_lazy('seance:index', kwargs={'ordering': 'expensive'}))
+        response = self.client.get(reverse_lazy('seance:index'), data={'ordering': 'expensive'})
         seances = response.context.get('seance_list')
         self.assertEqual(len(seances), 3)
         self.assertEqual(seances[0].ticket_price, 200.00)
         self.assertEqual(seances[2].ticket_price, 100.00)
+
+        # test ordering 'latest'
+        response = self.client.get(reverse_lazy('seance:index'), data={'ordering': 'latest'})
+        seances = response.context.get('seance_list')
+        self.assertEqual(len(seances), 3)
+        self.assertEqual(seances[0].time_starts, datetime.time(18, 0))
+        self.assertEqual(seances[2].time_starts, datetime.time(12, 0))
+
+        # test ordering 'closest'
+        response = self.client.get(reverse_lazy('seance:index'), data={'ordering': 'closest'})
+        seances = response.context.get('seance_list')
+        self.assertEqual(len(seances), 3)
+        self.assertEqual(seances[0].time_starts, datetime.time(12, 0))
+        self.assertEqual(seances[2].time_starts, datetime.time(18, 0))
 
 
 class AuthenticationTestCase(TestCase, BaseInitial):

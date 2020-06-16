@@ -50,6 +50,7 @@ class RegistrationForm(forms.ModelForm):
 
 
 ORDERING_CHOICES = (
+    ('', _('select ordering type')),
     ('cheap', _('from cheap to expensive')),
     ('expensive', _('from expensive to cheap')),
     ('latest', _('latest first')),
@@ -58,4 +59,4 @@ ORDERING_CHOICES = (
 
 
 class OrderingForm(forms.Form):
-    ordering = forms.ChoiceField(choices=ORDERING_CHOICES, label=_('Order by: '))
+    ordering = forms.ChoiceField(choices=ORDERING_CHOICES, label=_('Order by'))
