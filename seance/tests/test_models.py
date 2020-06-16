@@ -332,6 +332,24 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
         with self.assertRaises(ProtectedError):
             Hall.objects.last().delete()
 
+        # We can't delete Seance object, if there are seance references on it
+        with self.assertRaises(ProtectedError):
+            Seance.objects.last().delete()
+
+        # We can't delete Purchase object, if there are seance references on it
+        with self.assertRaises(ProtectedError):
+            Purchase.objects.last().delete()
+
+        # delete Ticket objects, but before watch they exist
+        self.assertEqual(Ticket.objects.all().count(), 2)
+        Ticket.objects.all().delete()
+        self.assertEqual(Ticket.objects.all().count(), 0)
+
+        # delete Purchase objects, but before watch they exist
+        self.assertEqual(Purchase.objects.all().count(), 1)
+        Purchase.objects.all().delete()
+        self.assertEqual(Purchase.objects.all().count(), 0)
+
         # delete seance object, but before watch it exists
         self.assertEqual(Seance.objects.all().count(), 1)
         Seance.objects.last().delete()
@@ -466,8 +484,8 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
         """
         Test that Ticket model works correctly
         """
-        self.assertEqual(self.ticket1, 'test_user')
-        self.assertEqual(self.ticket1.seance.price, self.seance.ticket_price)
+        self.assertEqual(self.ticket1.purchase.user.username, self.user.username)
+        self.assertEqual(self.ticket1.seance.ticket_price, self.seance.ticket_price)
         self.assertFalse(self.ticket1.seat_number)
         self.assertEqual(self.ticket1.purchase.user.username, self.user.username)
 
