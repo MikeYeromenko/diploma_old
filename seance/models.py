@@ -2,6 +2,7 @@ import datetime
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -71,14 +72,21 @@ class Seance(models.Model):
             if not self.date_ends:
                 # if admin didn't set the date_ends of seance, by default it is set to +15 days to
                 # date_start of seance
-                self.date_ends = self.date_starts + datetime.timedelta(days=15)
+                self.date_ends = self.get_date_ends()
 
             if not self.time_ends:
-                self.set_time_ends()
+                self.time_ends = self.get_time_ends()
 
         super().save(*args, **kwargs)
 
-    def set_time_ends(self):
+    def get_date_ends(self):
+        """
+        Counts the date of seance ending, adding 15 days to its start
+        :return: date_ends of seance
+        """
+        return self.date_starts + datetime.timedelta(days=15)
+
+    def get_time_ends(self):
         """
         Sets time_ends field of seance, if it was noy set by admin, adding to time_starts the film's
         duration and 10 minutes for advertisements.
@@ -92,10 +100,22 @@ class Seance(models.Model):
 
         # fractional part will be less then 60, so we leave it as minutes value
         minutes %= 60
-        self.time_ends = datetime.time(hour=hours, minute=minutes)
+        time_ends = datetime.time(hour=hours, minute=minutes)
+        return time_ends
 
     def __str__(self):
         return f'Seance with {self.film.title}'
+
+    @staticmethod
+    def validate_seances_intersect(hall_id, date_starts, time_starts, date_ends, time_ends):
+        """
+        Validates, that given seance doesn't intersect with others in time
+        :returns True if our seance intersects with another, False if not
+        """
+        seances = Seance.objects.filter(Q(hall_id=hall_id) & Q(date_starts__lte=date_ends) &
+                                        Q(date_ends__gte=date_starts) & Q(time_starts__lt=time_ends) &
+                                        Q(time_ends__gt=time_starts))
+        return bool(seances)
 
 
 class Ticket(models.Model):

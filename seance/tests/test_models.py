@@ -111,7 +111,7 @@ class BaseInitial:
         )
 
 
-class SeanceModelsTestCase(TestCase, BaseInitial):
+class GeneralModelsTestCase(TestCase, BaseInitial):
 
     def setUp(self):
         BaseInitial.__init__(self)
@@ -323,3 +323,94 @@ class SeanceModelsTestCase(TestCase, BaseInitial):
         self.assertEqual(Film.objects.all().count(), 0)
         self.assertEqual(Hall.objects.all().count(), 0)
 
+    def test_validate_seances_intersect(self):
+        """
+        Test that validate_seances_intersect (VSI) function (has decorator @property) works correctly
+        VSI returns true, if there are intersections in date/time with other seances
+        """
+
+        # creates additional data in BD:
+        # after that we have:   Yellow hall: 12:00 - 13:50; 18:00 - 19:50
+        #                       Green hall:  13:00 - 14:50; 18:00 - 19:50
+        # both start today to today + 15 days
+        self.create_additional_objects_in_db()
+
+        green_hall_pk = Hall.objects.get(name='Green').pk
+        yellow_hall_pk = Hall.objects.get(name='Yellow').pk
+        date_starts = datetime.date.today()
+        date_ends   = date_starts + datetime.timedelta(days=20)
+        time_starts = '14:00'
+        time_ends   = '16:00'
+
+        # ask VSI can we create seance in Green hall in time: 14:00 - 16:00
+        self.assertTrue(Seance.validate_seances_intersect(hall_id=green_hall_pk, date_starts=date_starts,
+                                                          date_ends=date_ends, time_starts=time_starts,
+                                                          time_ends=time_ends))
+
+        # ask VSI can we create seance in Green hall in time: 14:00 - 16:00, but beginning from now()+15 days
+        # the answer may be True, because date_starts will be the date_ends of last seance
+        date_starts = datetime.date.today() + datetime.timedelta(days=15)
+        date_ends   = date_starts + datetime.timedelta(days=20)
+        self.assertTrue(Seance.validate_seances_intersect(hall_id=green_hall_pk, date_starts=date_starts,
+                                                          date_ends=date_ends, time_starts=time_starts,
+                                                          time_ends=time_ends))
+
+        # ask VSI can we create seance in Green hall in time: 14:00 - 16:00, but beginning from now()+16 days
+        # the answer may be False, because last seance ended the day before
+        date_starts = datetime.date.today() + datetime.timedelta(days=16)
+        self.assertFalse(Seance.validate_seances_intersect(hall_id=green_hall_pk, date_starts=date_starts,
+                                                           date_ends=date_ends, time_starts=time_starts,
+                                                           time_ends=time_ends))
+        
+        # ask VSI can we create seance in Yellow hall in time: 14:00 - 16:00
+        # this shows that Green hall doesn't interfere to select time in Yellow
+        date_starts = datetime.date.today()
+        date_ends = date_starts + datetime.timedelta(days=20)
+        self.assertFalse(Seance.validate_seances_intersect(hall_id=yellow_hall_pk, date_starts=date_starts,
+                                                           date_ends=date_ends, time_starts=time_starts,
+                                                           time_ends=time_ends))
+
+        # ask VSI can we create seance in Green hall in time: 16:00 - 18:00, but beginning from now()+16 days
+        # the answer may be False, because time_ends 18:00 and another seance time_starts 18:00 is OK
+        date_starts = datetime.date.today()
+        date_ends = date_starts + datetime.timedelta(days=20)
+        time_starts = '16:00'
+        time_ends   = '18:00'
+        self.assertFalse(Seance.validate_seances_intersect(hall_id=green_hall_pk, date_starts=date_starts,
+                                                           date_ends=date_ends, time_starts=time_starts,
+                                                           time_ends=time_ends))
+
+        # create another seance with date_starts in future in Yellow hall
+
+        Seance.objects.create(
+            film=self.film,
+            date_starts=datetime.date.today() + datetime.timedelta(days=15),
+            date_ends=datetime.date.today() + datetime.timedelta(days=30),
+            time_starts=datetime.time(20),
+            places_taken=0,
+            hall=self.hall,
+            is_active=True,
+            description='New seance',
+            ticket_price=100,
+            admin=self.admin,
+        )
+
+        # seance duration: 20:00 - 21:50, but 15 days in future. Test the bottom border of date
+
+        # ask VSI can we create seance in Green hall in time: 20:00 - 21:50, date_ends = now +15 days
+        # the answer may be True, because date_ends of new seance will intersect date_starts of existing
+        # seance
+        date_starts = datetime.date.today()
+        date_ends = date_starts + datetime.timedelta(days=15)
+        time_starts = '20:00'
+        time_ends   = '21:50'
+        self.assertTrue(Seance.validate_seances_intersect(hall_id=yellow_hall_pk, date_starts=date_starts,
+                                                          date_ends=date_ends, time_starts=time_starts,
+                                                          time_ends=time_ends))
+
+        # ask VSI can we create seance in Green hall in time: 20:00 - 21:50, date_ends = now +14 days
+        # the answer may be False, because seances doesn't interfere in dates
+        date_ends = date_starts + datetime.timedelta(days=14)
+        self.assertFalse(Seance.validate_seances_intersect(hall_id=yellow_hall_pk, date_starts=date_starts,
+                                                           date_ends=date_ends, time_starts=time_starts,
+                                                           time_ends=time_ends))
