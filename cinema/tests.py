@@ -116,6 +116,14 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         login_form.find_element_by_name('password').send_keys('password1')
         login_form.find_element_by_css_selector('.submit-row input').click()
 
+
+class FormsTestCase(UsersTestCase):
+    def test_user_sees_start_page_registers_logs_in(self):
+        pass
+
+    def test_staff_can_add_content(self):
+        pass
+
     def test_filter_form_is_in_index_page(self):
         """
         Test that filter form was rendered and has fields we expect (at index page)
@@ -123,21 +131,15 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         self.browser.get(self.live_server_url + '/')
         ordering_form = self.browser.find_element_by_id('ordering-form')
         choices = ordering_form.find_element_by_id('id_ordering')
+        choices_days = ordering_form.find_element_by_id('id_days')
         filter_submit = ordering_form.find_element_by_id('submit-ordering')
 
-        self.assertEqual(filter_submit.get_attribute('value'), _('Order'))
+        self.assertEqual(filter_submit.get_attribute('value'), _('Submit'))
         self.assertIsNotNone(ordering_form.find_elements_by_css_selector('label[for="id_ordering"]'))
         self.assertEqual(len(choices.find_elements_by_tag_name('option')), 5)
+        self.assertEqual(len(choices_days.find_elements_by_tag_name('option')), 2)
 
-    def test_tomorrow_seances_input_is_in_index_page(self):
-        """
-        Test that there is button 'Seances tomorrow' with hidden input in the index page
-        """
-        self.browser.get(self.live_server_url + '/')
-        tomorrow_form = self.browser.find_element_by_id('tomorrow-form')
-        submit_tomorrow = tomorrow_form.find_element_by_id('submit-tomorrow')
 
-        self.assertIsNotNone(tomorrow_form.find_element_by_id('hidden-input'))
-        self.assertEqual(submit_tomorrow.get_attribute('value'), 'Seances for tomorrow')
+
 
 

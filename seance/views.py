@@ -18,16 +18,16 @@ class SeanceListView(ListView):
     template_name = 'seance/index.html'
 
     def get_queryset(self):
-        query = (Q(is_active=True) & Q(time_starts__gt=timezone.now()))
+        query = Q(is_active=True)
 
         # if user wants to watch seances for tomorrow this key will be GET
-        if self.request.GET.get('tomorrow', None):
+
+        if self.request.GET.get('days', None):
             tomorrow = datetime.date.today() + datetime.timedelta(days=1)
             query &= Q(date_starts__lte=tomorrow) & Q(date_ends__gte=tomorrow)
-            # import pdb;
-            # pdb.set_trace()
         else:
-            query &= Q(date_starts__lte=datetime.date.today()) & Q(date_ends__gte=datetime.date.today())
+            query &= (Q(date_starts__lte=datetime.date.today()) & Q(date_ends__gte=datetime.date.today()) &
+                      Q(time_starts__gt=timezone.now()))
 
         seances = Seance.objects.filter(query)
 
@@ -60,9 +60,10 @@ class SeanceListView(ListView):
 
         # if there is a choice made by user, we render page with that choice
         ordering = self.request.GET.get('ordering', '')
-        form = OrderingForm(initial={'ordering': ordering})
+        days = self.request.GET.get('days', '')
+        ordering_form = OrderingForm(initial={'ordering': ordering, 'days': days})
 
-        context['ordering_form'] = form
+        context['ordering_form'] = ordering_form
         return context
 
 
