@@ -28,7 +28,7 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         """
         response = self.client.get(reverse_lazy('seance:index'))
         page = response.content.decode()
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
 
 
 class AuthenticationTestCase(TestCase, BaseInitial):

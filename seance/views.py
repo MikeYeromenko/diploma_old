@@ -1,5 +1,8 @@
+import datetime
+
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -13,6 +16,12 @@ from seance.models import Seance, AdvUser
 class SeanceListView(ListView):
     model = Seance
     template_name = 'seance/index.html'
+
+    # def get_queryset(self):
+    #     return Seance.objects.filter(Q(is_active=True) &
+    #                                  Q(date_starts__lte=datetime.date.today()) &
+    #                                  Q(date_ends__gte=datetime.date.today()) &
+    #                                  Q(time_starts__gt=timezone.now()))
 
 
 class RegisterUserView(CreateView):

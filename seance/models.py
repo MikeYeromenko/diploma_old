@@ -117,6 +117,9 @@ class Seance(models.Model):
                                         Q(time_ends__gt=time_starts))
         return bool(seances)
 
+    class Meta:
+        ordering = ('time_starts', )
+
 
 class Ticket(models.Model):
     pass

@@ -332,7 +332,7 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
         # creates additional data in BD:
         # after that we have:   Yellow hall: 12:00 - 13:50; 18:00 - 19:50
         #                       Green hall:  13:00 - 14:50; 18:00 - 19:50
-        # both start today to today + 15 days
+        # both start today; end: today + 15 days
         self.create_additional_objects_in_db()
 
         green_hall_pk = Hall.objects.get(name='Green').pk
@@ -414,3 +414,17 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
         self.assertFalse(Seance.validate_seances_intersect(hall_id=yellow_hall_pk, date_starts=date_starts,
                                                            date_ends=date_ends, time_starts=time_starts,
                                                            time_ends=time_ends))
+
+    def test_default_seances_ordering(self):
+        """
+        Test that by default Seance objects are ordered by time_starts
+        """
+        # creates additional data in BD:
+        # after that we have:   Yellow hall: 12:00 - 13:50; 18:00 - 19:50
+        #                       Green hall:  13:00 - 14:50; 18:00 - 19:50
+        # each starts today; ends: today + 15 days
+        self.create_additional_objects_in_db()
+        seances = Seance.objects.all()
+        self.assertEqual(seances[0].time_starts, datetime.time(12, 0))
+        self.assertEqual(seances[1].time_starts, datetime.time(13, 0))
+        self.assertEqual(seances[2].time_starts, datetime.time(18, 0))
