@@ -119,6 +119,57 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         self.assertEqual(seances[0].time_starts, datetime.time(12, 0))
         self.assertEqual(seances[2].time_starts, datetime.time(18, 0))
 
+    def test_tomorrow_form(self):
+        """
+        Tests that Seances for tomorrow will be gotten correctly
+        """
+        # for this create seance, ending today, so tomorrow it will not be in queryset
+        Seance.objects.create(
+            film=self.film,
+            date_starts=datetime.date.today() - datetime.timedelta(days=5),
+            date_ends=datetime.date.today(),
+            time_starts=datetime.time(22),
+            places_taken=0,
+            hall=self.hall,
+            is_active=True,
+            description='Some text',
+            ticket_price=200,
+            admin=self.admin,
+        )
+        response = self.client.get(reverse_lazy('seance:index'))
+        seances = response.context.get('seance_list')
+        self.assertEqual(len(seances), 4)
+
+        # but tomorrow it has to show 3 seances
+
+        response = self.client.get(reverse_lazy('seance:index'), data={'tomorrow': 'tomorrow'})
+        seances = response.context.get('seance_list')
+        self.assertEqual(len(seances), 3)
+
+        # lets add new seance beginning from tomorrow
+        # Total quantity of seances for today will be 4, and for tomorrow - 4
+
+        Seance.objects.create(
+            film=self.film,
+            date_starts=datetime.date.today() + datetime.timedelta(days=1),
+            date_ends=datetime.date.today() + datetime.timedelta(days=5),
+            time_starts=datetime.time(22),
+            places_taken=0,
+            hall=self.hall,
+            is_active=True,
+            description='Some text',
+            ticket_price=200,
+            admin=self.admin,
+        )
+
+        response = self.client.get(reverse_lazy('seance:index'), data={'tomorrow': 'tomorrow'})
+        seances = response.context.get('seance_list')
+        self.assertEqual(len(seances), 4)
+
+        response = self.client.get(reverse_lazy('seance:index'))
+        seances = response.context.get('seance_list')
+        self.assertEqual(len(seances), 5)
+
 
 class AuthenticationTestCase(TestCase, BaseInitial):
 

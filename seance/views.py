@@ -18,11 +18,21 @@ class SeanceListView(ListView):
     template_name = 'seance/index.html'
 
     def get_queryset(self):
+        query = (Q(is_active=True) & Q(time_starts__gt=timezone.now()))
+
+        # if user wants to watch seances for tomorrow this key will be GET
+        if self.request.GET.get('tomorrow', None):
+            tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+            query &= Q(date_starts__lte=tomorrow) & Q(date_ends__gte=tomorrow)
+            # import pdb;
+            # pdb.set_trace()
+        else:
+            query &= Q(date_starts__lte=datetime.date.today()) & Q(date_ends__gte=datetime.date.today())
+
+        seances = Seance.objects.filter(query)
+
+        # if user selected type of ordering
         ordering_param = self.request.GET.get('ordering', None)
-        seances = Seance.objects.filter(Q(is_active=True) &
-                                        Q(date_starts__lte=datetime.date.today()) &
-                                        Q(date_ends__gte=datetime.date.today()) &
-                                        Q(time_starts__gt=timezone.now()))
         if ordering_param:
             seances = self.order_queryset(ordering_param, seances)
         return seances
