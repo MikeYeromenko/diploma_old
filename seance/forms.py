@@ -49,7 +49,7 @@ class RegistrationForm(forms.ModelForm):
         return user
 
 
-FILTER_CHOICES = (
+ORDERING_CHOICES = (
     ('cheap', _('from cheap to expensive')),
     ('expensive', _('from expensive to cheap')),
     ('latest', _('latest first')),
@@ -57,5 +57,5 @@ FILTER_CHOICES = (
 )
 
 
-class FilterForm(forms.Form):
-    filter = forms.ChoiceField(choices=FILTER_CHOICES, label=_('Choose filter: '))
+class OrderingForm(forms.Form):
+    ordering = forms.ChoiceField(choices=ORDERING_CHOICES, label=_('Order by: '))

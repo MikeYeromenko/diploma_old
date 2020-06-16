@@ -11,6 +11,7 @@ urlpatterns = [
     path('accounts/logout/', UserLogoutView.as_view(), name='logout'),
     path('accounts/login/', UserLoginView.as_view(), name='login'),
     path('accounts/register/', RegisterUserView.as_view(), name='register'),
+    path('<str:ordering>/', SeanceListView.as_view(), name='index_with_ordering'),
     path('', SeanceListView.as_view(), name='index'),
 
 ]

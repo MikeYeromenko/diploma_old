@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import ListView, CreateView, TemplateView, FormView
 
-from seance.forms import RegistrationForm, FilterForm
+from seance.forms import RegistrationForm, OrderingForm
 from seance.models import Seance, AdvUser
 
 
@@ -18,19 +18,37 @@ class SeanceListView(ListView):
     template_name = 'seance/index.html'
 
     def get_queryset(self):
-        return Seance.objects.filter(Q(is_active=True) &
-                                     Q(date_starts__lte=datetime.date.today()) &
-                                     Q(date_ends__gte=datetime.date.today()) &
-                                     Q(time_starts__gt=timezone.now()))
+        ordering_param = self.request.GET.get('ordering', None)
+        seances = Seance.objects.filter(Q(is_active=True) &
+                                        Q(date_starts__lte=datetime.date.today()) &
+                                        Q(date_ends__gte=datetime.date.today()) &
+                                        Q(time_starts__gt=timezone.now()))
+        if ordering_param:
+            self.order_queryset(ordering_param, seances)
+        return seances
+
+    @staticmethod
+    def order_queryset(ordering_param, seances):
+        """
+        orders seances queryset by users ordering
+        """
+        if ordering_param == 'cheap':
+            seances.order_by('ticket_price')
+        elif ordering_param == 'expensive':
+            seances.order_by('-ticket_price')
+        elif ordering_param == 'latest':
+            seances.order_by('-time_starts')
+        elif ordering_param == 'closest':
+            seances.order_by('time_starts')
 
     def get_context_data(self, *args, **kwargs):
         """
-        Adds FilterForm to context
+        Adds OrderingForm to context
         :return: context
         """
         context = super().get_context_data(*args, **kwargs)
-        form = FilterForm()
-        context['filter_form'] = form
+        form = OrderingForm()
+        context['ordering_form'] = form
         return context
 
 

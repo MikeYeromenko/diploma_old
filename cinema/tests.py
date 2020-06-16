@@ -121,10 +121,10 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
         Test that filter form was rendered and has fields we expect (at index page)
         """
         self.browser.get(self.live_server_url + '/')
-        filter_form = self.browser.find_element_by_id('filter-form')
-        choices = filter_form.find_element_by_id('id_filter')
-        filter_submit = filter_form.find_element_by_id('submit-choice')
+        ordering_form = self.browser.find_element_by_id('ordering-form')
+        choices = ordering_form.find_element_by_id('id_ordering')
+        filter_submit = ordering_form.find_element_by_id('submit-ordering')
 
-        self.assertEqual(filter_submit.get_attribute('value'), _('Filter'))
-        self.assertIsNotNone(filter_form.find_elements_by_css_selector('label[for="id_filter"]'))
+        self.assertEqual(filter_submit.get_attribute('value'), _('Order'))
+        self.assertIsNotNone(ordering_form.find_elements_by_css_selector('label[for="id_ordering"]'))
 

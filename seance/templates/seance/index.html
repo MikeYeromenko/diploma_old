@@ -4,9 +4,9 @@
 
 {% block content %}
     <br>
-    <form action="" id="filter-form" method="post">
-      {{ filter_form.as_p }}
-        <input type="submit" value="{% trans 'Filter' %}" id="submit-choice">
+    <form action="{% url 'seance:index' %}" id="ordering-form" method="get">
+      {{ ordering_form.as_p }}
+       <input type="submit" value="{% trans 'Order' %}" id="submit-ordering">
     </form>
     <br>
   <tr><td>Film</td> <td>Duration</td> <td>Dates</td> <td>Hall</td></tr>

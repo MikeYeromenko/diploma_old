@@ -10,6 +10,7 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
 
     def setUp(self):
         BaseInitial.__init__(self)
+        self.create_seance_objects_for_tests()
 
     def create_seance_objects_for_tests(self):
         Seance.objects.create(
@@ -47,7 +48,7 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
             hall=self.hall,
             is_active=True,
             description='Some text',
-            ticket_price=150,
+            ticket_price=140,
             admin=self.admin,
         )
 
@@ -68,7 +69,7 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
             hall=hall2,
             is_active=True,
             description='Some text',
-            ticket_price=150,
+            ticket_price=200,
             admin=self.admin,
         )
 
@@ -81,7 +82,7 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         self.assertEqual(response.status_code, 200)
         # import pdb; pdb.set_trace()
 
-        self.assertEqual(len(response.context['seance_list']), 1)
+        self.assertEqual(len(response.context['seance_list']), 3)
 
         self.assertEqual(response.context['seance_list'][0].film.title, 'James Bond')
 
@@ -90,9 +91,20 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
         Test that SeanceListView renders template with data we expected
         """
         # There are seances: 12:00 today, 18:00 today, 18:00 today not active, 18:00 today+15days, 17:00 today
-        self.create_seance_objects_for_tests()
         response = self.client.get(reverse_lazy('seance:index'))
         self.assertEqual(len(response.context.get('seance_list')), 3)
+
+    def test_ordering_queryset(self):
+        """
+        Test ordering_queryset method
+        """
+        # test ordering 'from expensive to cheap'
+        # , data = {}
+        response = self.client.get(reverse_lazy('seance:index', kwargs={'ordering': 'expensive'}))
+        seances = response.context.get('seance_list')
+        self.assertEqual(len(seances), 3)
+        self.assertEqual(seances[0].ticket_price, 200.00)
+        self.assertEqual(seances[2].ticket_price, 100.00)
 
 
 class AuthenticationTestCase(TestCase, BaseInitial):
