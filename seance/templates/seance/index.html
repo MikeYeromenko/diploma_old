@@ -4,10 +4,18 @@
 
 {% block content %}
     <br>
+
     <form action="{% url 'seance:index' %}" id="ordering-form" method="get">
       {{ ordering_form.as_p }}
        <input type="submit" value="{% trans 'Order' %}" id="submit-ordering">
     </form>
+
+    <br>
+    <form action="{% url 'seance:index' %}" id="tomorrow-form" method="get">
+        <input type="hidden" name="tomorrow" value="tomorrow" id="hidden-input">
+        <input type="submit" id="submit-tomorrow" value="{% trans 'Seances for tomorrow' %}">
+    </form>
+
     <br>
   <tr><td>Film</td> <td>Duration</td> <td>Dates</td> <td>Hall</td> <td>Price</td></tr>
     {% for seance in seance_list %}

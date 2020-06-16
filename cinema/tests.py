@@ -127,4 +127,17 @@ class UsersTestCase(LiveServerTestCase, BaseInitial):
 
         self.assertEqual(filter_submit.get_attribute('value'), _('Order'))
         self.assertIsNotNone(ordering_form.find_elements_by_css_selector('label[for="id_ordering"]'))
+        self.assertEqual(len(choices.find_elements_by_tag_name('option')), 5)
+
+    def test_tomorrow_seances_input_is_in_index_page(self):
+        """
+        Test that there is button 'Seances tomorrow' with hidden input in the index page
+        """
+        self.browser.get(self.live_server_url + '/')
+        tomorrow_form = self.browser.find_element_by_id('tomorrow-form')
+        submit_tomorrow = tomorrow_form.find_element_by_id('submit-tomorrow')
+
+        self.assertIsNotNone(tomorrow_form.find_element_by_id('hidden-input'))
+        self.assertEqual(submit_tomorrow.get_attribute('value'), 'Seances for tomorrow')
+
 
