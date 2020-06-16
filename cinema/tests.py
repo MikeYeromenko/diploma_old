@@ -139,6 +139,13 @@ class FormsTestCase(UsersTestCase):
         self.assertEqual(len(choices.find_elements_by_tag_name('option')), 5)
         self.assertEqual(len(choices_days.find_elements_by_tag_name('option')), 2)
 
+    def test_buying_form_is_in_index_page(self):
+        """
+        Test if buying form was rendered correctly
+        """
+        self.browser.get(self.live_server_url + '/')
+        buying_form = self.browser.find_element_by_id('buying-form')
+        self.fail('Incomplete test')
 
 
 

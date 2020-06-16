@@ -123,5 +123,16 @@ class Seance(models.Model):
         verbose_name_plural = _('seances')
 
 
+class Purchase(models.Model):
+    user = models.ForeignKey(AdvUser, on_delete=models.PROTECT, related_name='purchases', verbose_name=_('user'))
+    total_price = models.DecimalField(max_digits=15, decimal_places=2, verbose_name=_('payed:'))
+    created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=_('instance created at'))
+    was_returned = models.BooleanField(default=False, verbose_name=_('was returned?'))
+    returned_at = models.DateTimeField(blank=True, null=True, verbose_name=_('returned at'))
+
+
 class Ticket(models.Model):
-    pass
+    seance = models.ForeignKey(Seance, on_delete=models.PROTECT, related_name='tickets', verbose_name=_('ticket'))
+    purchase = models.ForeignKey(Purchase, on_delete=models.PROTECT, related_name='tickets', verbose_name=_('purchase'))
+    created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=_('instance created at'))
+    seat_number = models.PositiveSmallIntegerField(default=0, blank=True, null=True, verbose_name=_('seat number'))

@@ -24,6 +24,7 @@
             <td><p>{{ seance.hall.name }}</p></td>
             <td><p>{{ seance.ticket_price }} hrn.</p></td>
             <td><p>Free chairs: {{ seance.hall.size|sub:seance.places_taken }}</p></td>
+{#            <td><input type="submit"></td>#}
           </div>
         </tr>
       </table>

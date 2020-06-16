@@ -4,7 +4,7 @@ from django.db.models import ProtectedError
 from django.test import TestCase
 from django.utils import timezone
 
-from seance.models import Film, Hall, Seance, AdvUser
+from seance.models import Film, Hall, Seance, AdvUser, Purchase, Ticket
 
 
 class BaseInitial:
@@ -44,6 +44,27 @@ class BaseInitial:
             description='Some text about why this seance is the best',
             ticket_price=100,
             admin=self.admin,
+        )
+
+        self.user = AdvUser.objects.create(
+            username='test_user',
+        )
+        self.user.set_password('password1234')
+        self.user.save()
+
+        self.purchase = Purchase.objects.create(
+            user=self.user,
+            total_price=100
+        )
+
+        self.ticket1 = Ticket.objects.create(
+            seance=self.seance,
+            purchase=self.purchase
+        )
+
+        self.ticket2 = Ticket.objects.create(
+            seance=self.seance,
+            purchase=self.purchase
         )
 
     def create_additional_objects_in_db(self):
@@ -428,3 +449,27 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
         self.assertEqual(seances[0].time_starts, datetime.time(12, 0))
         self.assertEqual(seances[1].time_starts, datetime.time(13, 0))
         self.assertEqual(seances[2].time_starts, datetime.time(18, 0))
+
+    def test_purchase_model(self):
+        """
+        Test that Purchase model works correctly
+        """
+        self.assertEqual(self.purchase.user.username, self.user.username)
+        self.assertEqual(self.purchase.total_price, 100)
+        self.assertFalse(self.purchase.was_returned)
+        self.assertFalse(self.purchase.returned_at)
+
+        # film was created no more then 2 minutes ago
+        self.assertTrue(timezone.now() - datetime.timedelta(minutes=2) < self.purchase.created_at < timezone.now())
+
+    def test_ticket_model(self):
+        """
+        Test that Ticket model works correctly
+        """
+        self.assertEqual(self.ticket1, 'test_user')
+        self.assertEqual(self.ticket1.seance.price, self.seance.ticket_price)
+        self.assertFalse(self.ticket1.seat_number)
+        self.assertEqual(self.ticket1.purchase.user.username, self.user.username)
+
+        # film was created no more then 2 minutes ago
+        self.assertEqual(self.purchase.tickets.count(), Ticket.objects.filter(purchase__id=self.purchase.pk).count())
