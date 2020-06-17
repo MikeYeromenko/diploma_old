@@ -60,7 +60,6 @@ class Seance(models.Model):
     date_ends = models.DateField(null=True, blank=True, verbose_name=_('ends'))
     time_starts = models.TimeField(verbose_name=_('starts at: '))
     time_ends = models.TimeField(null=True, blank=True, verbose_name=_('ends at: '))
-    places_taken = models.PositiveIntegerField(default=0, verbose_name=_('places taken'))
     hall = models.ForeignKey(Hall, on_delete=models.PROTECT, related_name='seances', verbose_name=_('hall'))
     description = models.TextField(verbose_name=_('description'))
     created = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=_('instance created at'))
@@ -127,8 +126,15 @@ class Seance(models.Model):
         verbose_name = _('seance')
         verbose_name_plural = _('seances')
 
-    def seat_free(self, row, seat):
-        pass
+    @property
+    def places_taken(self):
+        """Returns tuples of (row, seat) that are sold"""
+        return [(ticket.get('row_number'), ticket.get('seat_number')) for ticket in self.tickets.values()]
+
+    @property
+    def get_free_seats_quantity(self):
+        """Counts how many free seats leaved"""
+        return self.hall.get_size - len(self.places_taken)
 
 
 class Purchase(models.Model):

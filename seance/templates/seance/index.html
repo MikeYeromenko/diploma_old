@@ -23,7 +23,8 @@
             <td><p>{{ seance.date_starts }} - {{ seance.date_ends }}</p></td>
             <td><p>{{ seance.hall.name }}</p></td>
             <td><p>{{ seance.ticket_price }} hrn.</p></td>
-            <td><p>Free chairs: {{ seance.hall.size|sub:seance.places_taken }}</p></td>
+            <td><p>Free chairs: {{ seance.get_free_seats_quantity }}</p></td>
+            <td><p>Quantity seats {{ seance.hall.get_size }}</p></td>
 {#            <td><input type="submit"></td>#}
           </div>
         </tr>

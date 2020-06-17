@@ -39,7 +39,6 @@ class BaseInitial:
             date_starts=datetime.date.today(),
             date_ends=datetime.date.today() + datetime.timedelta(days=15),
             time_starts=datetime.time(12),
-            places_taken=0,
             hall=self.hall,
             is_active=True,
             description='Some text about why this seance is the best',
@@ -99,7 +98,6 @@ class BaseInitial:
             date_starts=datetime.date.today(),
             date_ends=datetime.date.today() + datetime.timedelta(days=15),
             time_starts=datetime.time(18),
-            places_taken=0,
             hall=self.hall,
             is_active=True,
             description='Evening seance for those who fall in love',
@@ -112,7 +110,6 @@ class BaseInitial:
             date_starts=datetime.date.today(),
             date_ends=datetime.date.today() + datetime.timedelta(days=15),
             time_starts=datetime.time(18),
-            places_taken=0,
             hall=hall2,
             is_active=True,
             description='Evening seance for those who fall in love',
@@ -125,7 +122,6 @@ class BaseInitial:
             date_starts=datetime.date.today(),
             date_ends=datetime.date.today() + datetime.timedelta(days=15),
             time_starts=datetime.time(13),
-            places_taken=0,
             hall=hall2,
             is_active=True,
             description='If you have coffee break and desire...',
@@ -198,7 +194,8 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
         self.assertEqual(self.seance.ticket_price, 100)
         self.assertEqual(self.seance.time_ends, datetime.time(13, 50))
         self.assertEqual(self.seance.hall.name, 'Yellow')
-        self.assertEqual(self.seance.places_taken, 0)
+        self.assertEqual(self.seance.get_free_seats_quantity,
+                         self.hall.get_size - Ticket.objects.filter(seance__id=self.seance.pk).count())
         self.assertEqual(self.seance.description, 'Some text about why this seance is the best')
         self.assertTrue(self.seance.is_active)
         self.assertEqual(self.seance.admin.username, 'admin')
@@ -215,7 +212,6 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
             date_starts=datetime.date.today(),
             time_starts=datetime.time(14),
             time_ends=datetime.time(16),
-            places_taken=0,
             hall=self.hall,
             is_active=True,
             description='Some text about why this seance is the best',
@@ -235,7 +231,6 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
             date_starts=datetime.date.today(),
             date_ends=datetime.date.today() + datetime.timedelta(days=30),
             time_starts=datetime.time(23),
-            places_taken=0,
             hall=self.hall,
             is_active=True,
             description='Some text about why this seance is the best',
@@ -251,7 +246,6 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
             date_starts=datetime.date.today(),
             date_ends=datetime.date.today() + datetime.timedelta(days=30),
             time_starts=datetime.time(hour=23, minute=50),
-            places_taken=0,
             hall=self.hall,
             is_active=True,
             description='Some text about why this seance is the best',
@@ -430,7 +424,6 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
             date_starts=datetime.date.today() + datetime.timedelta(days=15),
             date_ends=datetime.date.today() + datetime.timedelta(days=30),
             time_starts=datetime.time(20),
-            places_taken=0,
             hall=self.hall,
             is_active=True,
             description='New seance',
