@@ -1,13 +1,14 @@
 import datetime
 
+from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import Q
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
+from django.utils import timezone, dateformat
 from django.views.generic import ListView, CreateView, TemplateView, FormView, DetailView, RedirectView
 
 from seance.forms import RegistrationForm, OrderingForm
@@ -107,26 +108,56 @@ class BasketView(LoginRequiredMixin, TemplateView):
 
 
 class BasketRedirectView(LoginRequiredMixin, RedirectView):
-    pattern_name = 'seance:basket'
+    url = reverse_lazy('seance:basket')
     
     def dispatch(self, request, *args, **kwargs):
+        self.add_to_session(request)
+        return super(BasketRedirectView, self).dispatch(request, *args, **kwargs)
+
+    def inspect_double_chosen(self, request):
+        """
+        Looks through the basket, and if dict with the same row, seat and seance is in it, messages user
+        he can't book the same seat twice
+        """
         row = request.GET.get('row', None)
         seat = request.GET.get('seat', None)
         seance_pk = request.GET.get('seance', None)
+        basket = request.session.get('basket')
+        if basket and row and seat and seance_pk:
+            for key in basket:
+                if (basket[key]['row'] == row and basket[key]['seat'] == seat
+                        and basket[key]['seance_pk'] == seance_pk):
+                    messages.add_message(request, messages.INFO, f'You can\'t choose the same seat twice')
+                    self.url = reverse_lazy('seance:seance_detail', kwargs={'pk': seance_pk})
+                    return None, None, None
+        return row, seat, seance_pk
+
+    def add_to_session(self, request):
+        """Adds info about the ticket in the basket into sessions"""
+        row, seat, seance_pk = self.inspect_double_chosen(request)
         if row and seat and seance_pk:
             if not request.session.get('basket', None):
                 request.session['basket'] = {}
             seance = get_object_or_404(Seance, pk=seance_pk)
-            request.session['basket'][f'{timezone.now()}'] = {
+            key = str(datetime.datetime.now().timestamp()).replace('.', '')
+            request.session['basket'][f'{key}'] = {
                 'row': row,
                 'seat': seat,
                 'seance_pk': seance_pk,
                 'film': seance.film.title,
-                'hall': seance.hall.name
+                'hall': seance.hall.name,
+                'price': str(seance.ticket_price),
+                'created': dateformat.format(timezone.now(), 'Y-m-d H:i:s')
             }
+            request.session['last_seance'] = seance_pk
             request.session.modified = True
-        # for bas in request.session["basket"]:
-        #     print(f'!!!!!!!!{request.session["basket"][bas]}')
-        return super(BasketRedirectView, self).dispatch(request, *args, **kwargs)
 
 
+class BasketCancelView(LoginRequiredMixin, RedirectView):
+    pattern_name = 'seance:basket'
+
+    def dispatch(self, request, *args, **kwargs):
+        key = request.GET.get('seance', None)
+        request.session.get('basket').pop(key)
+        request.session.modified = True
+        return super(BasketCancelView, self).dispatch(request, *args, **kwargs)

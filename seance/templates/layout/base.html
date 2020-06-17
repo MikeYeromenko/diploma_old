@@ -17,11 +17,12 @@
 {% endif %}
 <a id="link-register" href="{% url 'seance:register' %}">{% trans 'Registration' %}</a>
 <a id="link-main" href="{% url 'seance:index' %}">{% trans 'Main' %}</a>
+<a id="link-main" href="{% url 'seance:basket' %}">{% trans 'Basket' %}</a>
 
 {% block messages %}
     {% if messages %}
         {% for message in messages %}
-            <p>{{ message }}</p>
+            <h3 style="color: red">{{ message }}</h3>
         {% endfor %}
     {% endif %}
 {% endblock messages %}

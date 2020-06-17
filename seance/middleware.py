@@ -31,8 +31,15 @@ class LogoutIfInActiveMiddleware(MiddlewareMixin):
 def seance_context_processor(request):
     context = {}
     basket = request.session.get('basket', None)
+    last_seance = request.session.get('last_seance', None)
     if basket:
         context['basket'] = basket
+        total_price = 0
+        for key in basket:
+            total_price += float(basket[key]['price'])
+        context['total_price'] = total_price
+    if last_seance:
+        context['last_seance'] = last_seance
     return context
 
 
