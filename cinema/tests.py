@@ -139,13 +139,15 @@ class FormsTestCase(UsersTestCase):
         self.assertEqual(len(choices.find_elements_by_tag_name('option')), 5)
         self.assertEqual(len(choices_days.find_elements_by_tag_name('option')), 2)
 
-    def test_buying_form_is_in_index_page(self):
+    def test_show_seance_detail_form(self):
         """
-        Test if buying form was rendered correctly
+        Test if show-seance-details-form form was rendered correctly
         """
         self.browser.get(self.live_server_url + '/')
-        buying_form = self.browser.find_element_by_id('buying-form')
-        self.fail('Incomplete test')
+        show_seance_form = self.browser.find_element_by_id('show-seance-details-form')
+        self.assertIsNotNone(show_seance_form)
+        submit = show_seance_form.find_element_by_id('show-details')
+        self.assertEqual(submit.get_attribute('value'), _('Show details'))
 
 
 

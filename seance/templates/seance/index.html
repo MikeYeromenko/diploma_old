@@ -25,6 +25,11 @@
             <td><p>{{ seance.ticket_price }} hrn.</p></td>
             <td><p>Free chairs: {{ seance.get_free_seats_quantity }}</p></td>
             <td><p>Quantity seats {{ seance.hall.get_size }}</p></td>
+            <td>
+                <form action="{% url 'seance:seance_detail' seance.pk %}" method="get" id="show-seance-details-form">
+                    <input type="submit" id="show-details" value="{% trans 'Show details' %}">
+                </form>
+            </td>
 {#            <td><input type="submit"></td>#}
           </div>
         </tr>
