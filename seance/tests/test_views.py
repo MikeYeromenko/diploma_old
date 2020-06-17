@@ -326,3 +326,16 @@ class BasketViewTestCase(TestCase, BaseInitial):
             response = self.client.get(reverse_lazy('seance:basket'))
         self.assertEqual(response.status_code, 200)
 
+
+class SeanceDeatailViewTestCase(TestCase, BaseInitial):
+
+    def setUp(self):
+        BaseInitial.__init__(self)
+
+    def test_basic(self):
+        """
+        Test that basket view works correctly
+        """
+        with self.assertTemplateUsed('seance/seance_detail.html'):
+            response = self.client.get(reverse_lazy('seance:seance_detail', kwargs={'pk': self.seance.pk}))
+        self.assertEqual(response.status_code, 200)

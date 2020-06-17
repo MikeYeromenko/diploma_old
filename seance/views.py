@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import ListView, CreateView, TemplateView, FormView
+from django.views.generic import ListView, CreateView, TemplateView, FormView, DetailView
 
 from seance.forms import RegistrationForm, OrderingForm
 from seance.models import Seance, AdvUser
@@ -65,6 +65,11 @@ class SeanceListView(ListView):
 
         context['ordering_form'] = ordering_form
         return context
+
+
+class SeanceDetailView(DetailView):
+    model = Seance
+    template_name = 'seance/seance_detail.html'
 
 
 class RegisterUserView(CreateView):
