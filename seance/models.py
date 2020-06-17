@@ -127,6 +127,9 @@ class Seance(models.Model):
         verbose_name = _('seance')
         verbose_name_plural = _('seances')
 
+    def seat_free(self, row, seat):
+        pass
+
 
 class Purchase(models.Model):
     user = models.ForeignKey(AdvUser, on_delete=models.PROTECT, related_name='purchases', verbose_name=_('user'))
@@ -144,6 +147,7 @@ class Ticket(models.Model):
     purchase = models.ForeignKey(Purchase, on_delete=models.PROTECT, related_name='tickets', verbose_name=_('purchase'))
     created_at = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=_('instance created at'))
     seat_number = models.PositiveSmallIntegerField(default=0, blank=True, null=True, verbose_name=_('seat number'))
+    row_number = models.PositiveSmallIntegerField(default=0, blank=True, null=True, verbose_name=_('row number'))
 
     def __str__(self):
         return self.seance.__str__()

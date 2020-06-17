@@ -492,6 +492,7 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
         self.assertEqual(self.ticket1.purchase.user.username, self.user.username)
         self.assertEqual(self.ticket1.seance.ticket_price, self.seance.ticket_price)
         self.assertFalse(self.ticket1.seat_number)
+        self.assertFalse(self.ticket1.row_number)
         self.assertEqual(self.ticket1.purchase.user.username, self.user.username)
 
         # film was created no more then 2 minutes ago
