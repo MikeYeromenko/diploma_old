@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.db.models import Q
 from django.http import HttpResponseRedirect
@@ -110,5 +111,24 @@ class UserProfileView(TemplateView):
     template_name = 'seance/profile.html'
 
 
-class BasketView(TemplateView):
+class BasketView(LoginRequiredMixin, TemplateView):
     template_name = 'seance/basket.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        row = request.GET.get('row', None)
+        seat = request.GET.get('seat', None)
+        seance_pk = request.GET.get('seance', None)
+        seance = get_object_or_404(Seance, pk=seance_pk)
+        if row and seat and seance_pk:
+            if not request.session.get('basket', None):
+                request.session['basket'] = {}
+            request.session['basket'][f'{timezone.now()}'] = {
+                'row': row,
+                'seat': seat,
+                'seance_pk': seance_pk,
+                'film': seance.film.title,
+                'hall': seance.hall.name
+            }
+        # for bas in request.session["basket"]:
+        #     print(f'!!!!!!!!{request.session["basket"][bas]}')
+        return super().dispatch(request, *args, **kwargs)

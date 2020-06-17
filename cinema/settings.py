@@ -123,3 +123,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'seance.AdvUser'
+
+SESSION_SAVE_EVERY_REQUEST = True
