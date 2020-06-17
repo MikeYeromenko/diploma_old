@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import ListView, CreateView, TemplateView, FormView, DetailView
+from django.views.generic import ListView, CreateView, TemplateView, FormView, DetailView, RedirectView
 
 from seance.forms import RegistrationForm, OrderingForm
 from seance.models import Seance, AdvUser, Hall
@@ -111,8 +111,9 @@ class UserProfileView(TemplateView):
     template_name = 'seance/profile.html'
 
 
-class BasketView(LoginRequiredMixin, TemplateView):
+class BasketView(LoginRequiredMixin, RedirectView):
     template_name = 'seance/basket.html'
+    url = reverse_lazy('seance:basket')
     
     def dispatch(self, request, *args, **kwargs):
         row = request.GET.get('row', None)
@@ -134,10 +135,4 @@ class BasketView(LoginRequiredMixin, TemplateView):
         #     print(f'!!!!!!!!{request.session["basket"][bas]}')
         return super(BasketView, self).dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        basket = self.request.session.get('basket', None)
-        if basket:
-            context['basket'] = basket
-            print(f'!!!!!!!!!!!{basket}')
-        return context
+

@@ -27,3 +27,12 @@ class LogoutIfInActiveMiddleware(MiddlewareMixin):
                 messages.add_message(request, messages.INFO, _('More than 5 minutes inactive. '
                                                                'Please login again'))
 
+
+def seance_context_processor(request):
+    context = {}
+    basket = request.session.get('basket', None)
+    if basket:
+        context['basket'] = basket
+    return context
+
+
