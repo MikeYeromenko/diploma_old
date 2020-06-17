@@ -1,8 +1,11 @@
+import datetime
+
+from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from django.urls import reverse_lazy
 from django.utils import timezone
 
-from seance.models import AdvUser
+from seance.models import AdvUser, Seance, Film, Hall
 
 
 class CustomMiddlewareTestCase(TestCase):
@@ -64,4 +67,3 @@ class CustomMiddlewareTestCase(TestCase):
 
         response = self.client.get(reverse_lazy('seance:index'))
         self.assertTrue(response.context.get('user').is_authenticated)
-

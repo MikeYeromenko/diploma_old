@@ -2,11 +2,12 @@ from django.urls import path
 
 
 from seance.views import SeanceListView, RegisterUserView, UserLoginView, UserProfileView, UserLogoutView, BasketView, \
-    SeanceDetailView
+    SeanceDetailView, BasketRedirectView
 
 app_name = 'seance'
 
 urlpatterns = [
+    path('basket/redirect/', BasketRedirectView.as_view(), name='basket-redirect'),
     path('basket/', BasketView.as_view(), name='basket'),
     path('accounts/profile/', UserProfileView.as_view(), name='profile'),
     path('accounts/logout/', UserLogoutView.as_view(), name='logout'),

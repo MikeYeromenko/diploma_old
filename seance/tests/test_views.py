@@ -332,6 +332,34 @@ class BasketViewTestCase(TestCase, BaseInitial):
             response = self.client.get(reverse_lazy('seance:basket'))
         self.assertEqual(response.status_code, 200)
 
+    def basket_redirect_view(self):
+        """
+        Test that basket redirect view works correctly
+        """
+        # only for logged in users
+        response = self.client.get(reverse_lazy('seance:basket-redirect'))
+        self.assertEqual(response.status_code, 302)
+
+        # login user
+        self.client.login(username=self.user.username, password='password1234')
+        response = self.client.get(reverse_lazy('seance:basket-redirect'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_basket_is_in_context(self):
+        """Test that 'basket' was added to context"""
+
+        self.client.login(username='test_user', password='password1234')
+
+        self.client.get(reverse_lazy('seance:basket-redirect'), data={
+            'row': 1,
+            'seat': 1,
+            'seance': self.seance.pk
+        })
+
+        response = self.client.get(reverse_lazy('seance:basket'))
+
+        self.assertIsNotNone(response.context.get('basket'))
+
 
 class SeanceDetailViewTestCase(TestCase, BaseInitial):
 
@@ -346,7 +374,4 @@ class SeanceDetailViewTestCase(TestCase, BaseInitial):
             response = self.client.get(reverse_lazy('seance:seance_detail', kwargs={'pk': self.seance.pk}))
         self.assertEqual(response.status_code, 200)
 
-    # def test_places_taken_is_in_context(self):
-    #     """Test that places_taken was added to context"""
-    #     response = self.client.get(f'/seance/{self.seance.pk}/')
-    #     self.assertEqual(response.context.get('places_taken'), self.seance.places_taken)
+

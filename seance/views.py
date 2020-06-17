@@ -72,15 +72,6 @@ class SeanceDetailView(DetailView):
     model = Seance
     template_name = 'seance/seance_detail.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        seance = get_object_or_404(Seance, pk=context.get('seance').pk)
-        hall = get_object_or_404(Hall, pk=seance.hall.pk)
-        places_taken = seance.places_taken
-        context['places_taken'] = places_taken
-        context['hall'] = hall
-        return context
-
 
 class RegisterUserView(CreateView):
     model = AdvUser
@@ -111,9 +102,12 @@ class UserProfileView(TemplateView):
     template_name = 'seance/profile.html'
 
 
-class BasketView(LoginRequiredMixin, RedirectView):
+class BasketView(LoginRequiredMixin, TemplateView):
     template_name = 'seance/basket.html'
-    url = reverse_lazy('seance:basket')
+
+
+class BasketRedirectView(LoginRequiredMixin, RedirectView):
+    pattern_name = 'seance:basket'
     
     def dispatch(self, request, *args, **kwargs):
         row = request.GET.get('row', None)
@@ -130,9 +124,9 @@ class BasketView(LoginRequiredMixin, RedirectView):
                 'film': seance.film.title,
                 'hall': seance.hall.name
             }
-        request.session.modified = True
+            request.session.modified = True
         # for bas in request.session["basket"]:
         #     print(f'!!!!!!!!{request.session["basket"][bas]}')
-        return super(BasketView, self).dispatch(request, *args, **kwargs)
+        return super(BasketRedirectView, self).dispatch(request, *args, **kwargs)
 
 

@@ -60,3 +60,11 @@ class CinemaUrlsTestCase(TestCase):
         registration = resolve(f'/seance/{1}/')
         self.assertEqual(registration.func.__name__, 'SeanceDetailView')
         self.assertEqual(registration.url_name, 'seance_detail')
+
+    def test_url_for_basket_redirect(self):
+        """
+        Test that url basket/redirect/ exists, resolves to the correct cbv and has expected name
+        """
+        registration = resolve('/basket/redirect/')
+        self.assertEqual(registration.func.__name__, 'BasketRedirectView')
+        self.assertEqual(registration.url_name, 'basket-redirect')

@@ -17,7 +17,7 @@
         {% spaceless %}
             Row {{ row }}:
             {% for seat in 1|range:seance.hall.seats %}
-                <form action="{% url 'seance:basket' %}" style="display: inline-block">
+                <form action="{% url 'seance:basket-redirect' %}" style="display: inline-block">
                     <input type="hidden" name="row" value="{{ row }}">
                     <input type="hidden" name="seat" value="{{ seat }}">
                     <input type="hidden" name="seance" value="{{ seance.pk }}">
