@@ -27,7 +27,8 @@ class BaseInitial:
 
         self.hall = Hall.objects.create(
             name='Yellow',
-            size=50,
+            rows=12,
+            seats=15,
             is_active=True,
             description='Some text about why this hall is the best',
             admin=self.admin
@@ -86,7 +87,8 @@ class BaseInitial:
 
         hall2 = Hall.objects.create(
             name='Green',
-            size=80,
+            rows=15,
+            seats=20,
             is_active=True,
             description='Some text about why this hall is the best',
             admin=admin2
@@ -175,10 +177,12 @@ class GeneralModelsTestCase(TestCase, BaseInitial):
         Tests that Hall object was created correctly
         """
         self.assertEqual(self.hall.name, 'Yellow')
-        self.assertEqual(self.hall.size, 50)
+        self.assertEqual(self.hall.rows, 12)
+        self.assertEqual(self.hall.seats, 15)
         self.assertEqual(self.hall.admin.username, 'admin')
         self.assertEqual(self.hall.description, 'Some text about why this hall is the best')
         self.assertTrue(self.hall.is_active)
+        self.assertEqual(self.hall.get_size, 180)
 
         # hall was created no more then 2 minutes ago
         self.assertTrue(timezone.now() - datetime.timedelta(minutes=2) < self.hall.created < timezone.now())

@@ -37,7 +37,8 @@ class Film(models.Model):
 
 class Hall(models.Model):
     name = models.CharField(max_length=20, verbose_name=_('name'))
-    size = models.PositiveIntegerField(verbose_name=_('how many seats?'))
+    seats = models.PositiveSmallIntegerField(default=0, verbose_name=_('how many seats?'))
+    rows = models.PositiveSmallIntegerField(default=0, verbose_name=_('how many seats?'))
     description = models.TextField(verbose_name=_('description'))
     created = models.DateTimeField(auto_now_add=True, editable=False, verbose_name=_('instance created at'))
     updated = models.DateTimeField(auto_now=True, verbose_name=_('instance updated at'))
@@ -47,6 +48,10 @@ class Hall(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def get_size(self):
+        return self.rows * self.seats
 
 
 class Seance(models.Model):

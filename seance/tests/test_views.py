@@ -57,7 +57,8 @@ class SeanceListViewTestCase(TestCase, BaseInitial):
 
         hall2 = Hall.objects.create(
             name='Green',
-            size=80,
+            rows=15,
+            seats=20,
             is_active=True,
             description='Some text about why this hall is the best',
             admin=self.admin
