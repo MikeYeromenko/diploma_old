@@ -1,1 +1,14 @@
 {% extends 'layout/base.html' %}
+
+
+{% block content %}
+    {% if basket %}
+        <h4>You have booked tickets:</h4>
+        {% for date, info in basket.items %}
+            {% for key, val in info.items %}
+                {{ key }} : {{ val }}
+            {% endfor %}
+            <br>
+        {% endfor %}
+    {% endif %}
+{% endblock content %}

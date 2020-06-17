@@ -65,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # 'django.core.context_processors.request',
             ],
         },
     },
@@ -124,4 +125,3 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'seance.AdvUser'
 
-SESSION_SAVE_EVERY_REQUEST = True

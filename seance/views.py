@@ -118,10 +118,10 @@ class BasketView(LoginRequiredMixin, TemplateView):
         row = request.GET.get('row', None)
         seat = request.GET.get('seat', None)
         seance_pk = request.GET.get('seance', None)
-        seance = get_object_or_404(Seance, pk=seance_pk)
         if row and seat and seance_pk:
             if not request.session.get('basket', None):
                 request.session['basket'] = {}
+            seance = get_object_or_404(Seance, pk=seance_pk)
             request.session['basket'][f'{timezone.now()}'] = {
                 'row': row,
                 'seat': seat,
@@ -129,6 +129,15 @@ class BasketView(LoginRequiredMixin, TemplateView):
                 'film': seance.film.title,
                 'hall': seance.hall.name
             }
+        request.session.modified = True
         # for bas in request.session["basket"]:
         #     print(f'!!!!!!!!{request.session["basket"][bas]}')
-        return super().dispatch(request, *args, **kwargs)
+        return super(BasketView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        basket = self.request.session.get('basket', None)
+        if basket:
+            context['basket'] = basket
+            print(f'!!!!!!!!!!!{basket}')
+        return context

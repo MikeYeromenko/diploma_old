@@ -322,12 +322,18 @@ class BasketViewTestCase(TestCase, BaseInitial):
         """
         Test that basket view works correctly
         """
+        # only for logged in users
+        response = self.client.get(reverse_lazy('seance:basket'))
+        self.assertEqual(response.status_code, 302)
+
+        # login user
+        self.client.login(username=self.user.username, password='password1234')
         with self.assertTemplateUsed('seance/basket.html'):
             response = self.client.get(reverse_lazy('seance:basket'))
         self.assertEqual(response.status_code, 200)
 
 
-class SeanceDeatailViewTestCase(TestCase, BaseInitial):
+class SeanceDetailViewTestCase(TestCase, BaseInitial):
 
     def setUp(self):
         BaseInitial.__init__(self)
