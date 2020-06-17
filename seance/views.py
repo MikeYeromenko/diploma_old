@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.views.generic import ListView, CreateView, TemplateView, FormView, DetailView
 
 from seance.forms import RegistrationForm, OrderingForm
-from seance.models import Seance, AdvUser
+from seance.models import Seance, AdvUser, Hall
 
 
 class SeanceListView(ListView):
@@ -74,8 +74,10 @@ class SeanceDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         seance = get_object_or_404(Seance, pk=context.get('seance').pk)
+        hall = get_object_or_404(Hall, pk=seance.hall.pk)
         places_taken = seance.places_taken
         context['places_taken'] = places_taken
+        context['hall'] = hall
         return context
 
 
