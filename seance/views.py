@@ -71,6 +71,13 @@ class SeanceDetailView(DetailView):
     model = Seance
     template_name = 'seance/seance_detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        seance = get_object_or_404(Seance, pk=context.get('seance').pk)
+        places_taken = seance.places_taken
+        context['places_taken'] = places_taken
+        return context
+
 
 class RegisterUserView(CreateView):
     model = AdvUser

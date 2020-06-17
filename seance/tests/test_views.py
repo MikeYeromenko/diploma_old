@@ -339,3 +339,8 @@ class SeanceDeatailViewTestCase(TestCase, BaseInitial):
         with self.assertTemplateUsed('seance/seance_detail.html'):
             response = self.client.get(reverse_lazy('seance:seance_detail', kwargs={'pk': self.seance.pk}))
         self.assertEqual(response.status_code, 200)
+
+    def test_places_taken_is_in_context(self):
+        """Test that places_taken was added to context"""
+        response = self.client.get(f'/seance/{self.seance.pk}/')
+        self.assertEqual(response.context.get('places_taken'), self.seance.places_taken)
